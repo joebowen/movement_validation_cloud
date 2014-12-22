@@ -1,3 +1,3 @@
 #!/bin/bash
 
-pip install --allow-external  -r '../requirements.txt'
+pip install  -r '../requirements.txt'

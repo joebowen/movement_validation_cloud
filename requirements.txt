@@ -15,8 +15,7 @@ argparse==1.2.1
 backports.ssl-match-hostname==3.4.0.2
 certifi==14.05.14
 django-filter==0.9.1
-git
--e git+https://github.com/danirus/django-pagedown.git@b67da0a5c68c8f1d75922afe7f5dc8eac3172a0b#egg=django_pagedown-master
+#-e git+https://github.com/danirus/django-pagedown.git@b67da0a5c68c8f1d75922afe7f5dc8eac3172a0b#egg=django_pagedown-master
 djangorestframework==3.0.2
 docutils==0.12
 freemix==0.2
