@@ -15,17 +15,5 @@ class Openworm(models.Model):
     language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
     style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
 
-    def __unicode__(self):
-        return str(self.model_attribute)
-
-    def __encoding__(self):
-        return str(self.model_attribute)
-
-    def __str__(self):
-        return str(self.model_attribute)
-
-    def python_2_unicode_compatible(self):
-        return str(self.model_attribute)
-
     class Meta:
         ordering = ('created',)

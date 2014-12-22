@@ -1,11 +1,8 @@
 from django.conf.urls import url
-from views import MyView
-
-myview = MyView()
+import views
 
 urlpatterns = [
-    url(r'^$', myview.index, name='index'),
+    url(r'^$', views.index, name='index'),
 
-    url(r'^api/$', myview.openworm_list),
-    url(r'^api/(?P<pk>[0-9]+)/$', myview.openworm_detail),
+    url(r'^api/$', views.OpenwormListView),
 ]
