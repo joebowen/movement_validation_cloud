@@ -1,26 +1,28 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import authentication, permissions
 from models import Openworm
 from serializers import OpenwormSerializer
-from django.http import HttpResponse
+from django.http import StreamingHttpResponse
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
 
 class OpenwormListView(APIView):
     queryset = Openworm.objects.all()
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
 
     def get(self, result, format=None):
         snippets = self.queryset
         serializer = OpenwormSerializer(snippets, many=True)
-        return Response(serializer.data)
+        return StreamingHttpResponse(serializer.data)
+        #return Response(data=serializer.data)
 
     def post(self, request, format=None):
         serializer = OpenwormSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
