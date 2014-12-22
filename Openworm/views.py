@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import authentication, permissions
 from models import Openworm
 from serializers import OpenwormSerializer
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, HttpResponse
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
