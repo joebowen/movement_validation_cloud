@@ -1,3 +1,3 @@
 #!/bin/bash
 
-pip install -r '../content/OpenWorm/requirements.txt'
+pip install -r '../requirements.txt'

@@ -14,4 +14,5 @@ $ . content/djangodev/bin/activate
 
 eb start
 
+eb status --verbose
 
