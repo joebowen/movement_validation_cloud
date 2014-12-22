@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup python ../content/Openworm/manage.py runserver &
+nohup python ../content/Openworm_Project/manage.py runserver &
