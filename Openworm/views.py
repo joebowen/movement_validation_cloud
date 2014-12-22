@@ -11,11 +11,11 @@ class MyView(APIView):
     queryset = Openworm.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    def index(request, stuff):
+    def index(self, request):
         return HttpResponse("Hello, world. You're at the poll index.")
 
     @api_view(['GET', 'POST'])
-    def openworm_list(request):
+    def openworm_list(self, request):
         """
         List all snippets, or create a new snippet.
         """
@@ -32,7 +32,7 @@ class MyView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @api_view(['GET', 'POST'])
-    def openworm_detail(request):
+    def openworm_detail(self, request):
         """
         List all snippets, or create a new snippet.
         """
