@@ -58,16 +58,27 @@ WSGI_APPLICATION = 'Openworm_Project.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 if 'RDS_DB_NAME' in os.environ:
- DATABASES = {
-  'default': {
-  'ENGINE': 'django.db.backends.mysql',
-  'NAME': os.environ['RDS_DB_NAME'],
-  'USER': os.environ['RDS_USERNAME'],
-  'PASSWORD': os.environ['RDS_PASSWORD'],
-  'HOST': os.environ['RDS_HOSTNAME'],
-  'PORT': os.environ['RDS_PORT'],
-  }
- }
+    DATABASES = {
+        'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ['RDS_DB_NAME'],
+        'USER': os.environ['RDS_USERNAME'],
+        'PASSWORD': os.environ['RDS_PASSWORD'],
+        'HOST': os.environ['RDS_HOSTNAME'],
+        'PORT': os.environ['RDS_PORT'],
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django',
+        'USER': 'newuser',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

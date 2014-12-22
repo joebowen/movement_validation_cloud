@@ -1,10 +1,10 @@
-from django.conf.urls import url
+from django.conf.urls import url, patterns
 from Openworm.views import *
 
+openworm =  OpenwormListView()
 
-
-urlpatterns = [
+urlpatterns = patterns('',
     url(r'^$', index, name='index'),
 
-    url(r'^api/$', OpenwormListView().get()),
-]
+    url(r'^api/$', openworm.get(), name='api'),
+)
