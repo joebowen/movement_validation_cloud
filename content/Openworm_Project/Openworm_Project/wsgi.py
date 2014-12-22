@@ -1,5 +1,5 @@
 """
-WSGI config for OpenWorm_Movement_Validation project.
+WSGI config for Openworm_Project project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "OpenWorm_Movement_Validation.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Openworm_Project.settings")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()

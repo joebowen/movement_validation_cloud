@@ -1,5 +1,5 @@
 """
-Django settings for OpenWorm_Movement_Validation project.
+Django settings for Openworm_Project project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '4ym+_+=653)e0+1yhja_j_&kmhd*hu4!xg&6ow+%vx(qx)#+36'
+SECRET_KEY = '#jf))7exroxbzz+il)$*0er$j59pevg$w0w&#*898_9%m5&(@#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -47,9 +47,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'OpenWorm_Movement_Validation.urls'
+ROOT_URLCONF = 'Openworm_Project.urls'
 
-WSGI_APPLICATION = 'OpenWorm_Movement_Validation.wsgi.application'
+WSGI_APPLICATION = 'Openworm_Project.wsgi.application'
 
 
 # Database
@@ -57,8 +57,12 @@ WSGI_APPLICATION = 'OpenWorm_Movement_Validation.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ['RDS_DB_NAME'],
+        'USER': os.environ['RDS_USERNAME'],
+        'PASSWORD': os.environ['RDS_PASSWORD'],
+        'HOST': os.environ['RDS_HOSTNAME'],
+        'PORT': os.environ['RDS_PORT'],
     }
 }
 
