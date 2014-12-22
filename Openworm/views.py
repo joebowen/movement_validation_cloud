@@ -13,7 +13,7 @@ def index(request):
 class OpenwormListView(APIView):
     queryset = Openworm.objects.all()
 
-    def get(self, request, format=None):
+    def get(self, format=None):
         snippets = self.queryset
         serializer = OpenwormSerializer(snippets, many=True)
         return Response(serializer.data)
