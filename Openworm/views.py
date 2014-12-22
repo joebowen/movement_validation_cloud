@@ -18,7 +18,7 @@ class OpenwormListView(APIView):
         snippets = self.queryset
         serializer = OpenwormSerializer(snippets, many=True)
         return StreamingHttpResponse(serializer.data)
-        #return Response(data=serializer.data)
+        #return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     def post(self, request, format=None):
         serializer = OpenwormSerializer(data=request.data)
