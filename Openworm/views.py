@@ -11,6 +11,18 @@ class MyView(APIView):
     queryset = Openworm.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
+    def __unicode__(self):
+        return str(self.model_attribute)
+
+    def __encoding__(self):
+        return str(self.model_attribute)
+
+    def __str__(self):
+        return str(self.model_attribute)
+
+    def python_2_unicode_compatible(self):
+        return str(self.model_attribute)
+
     def index(self, request):
         return HttpResponse("Hello, world. You're at the poll index.")
 

@@ -18,6 +18,12 @@ class Openworm(models.Model):
     def __unicode__(self):
         return str(self.model_attribute)
 
+    def __encoding__(self):
+        return str(self.model_attribute)
+
+    def __str__(self):
+        return str(self.model_attribute)
+
     def python_2_unicode_compatible(self):
         return str(self.model_attribute)
 
