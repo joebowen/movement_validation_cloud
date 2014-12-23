@@ -3,7 +3,7 @@ from Openworm import views
 from django.contrib.auth.models import User
 
 urlpatterns = patterns('',
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.index, name='Index'),
 
     url(r'^Aspects/(?P<pk>[0-9]+)/$', views.AspectListView.as_view()),
     url(r'^Aspects/$', views.AspectListViewAll.as_view()),

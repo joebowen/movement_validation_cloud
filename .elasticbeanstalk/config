@@ -1,6 +1,6 @@
 [global]
 ApplicationName=movement_validation_cloud
-ApplicationVersionName=git-e3a5cfe3d41e6c0f80ed64f214642d6ec9263453-1419218541134
+ApplicationVersionName=git-975157e98d855b49828fb86d9c1b4cc0a230c8aa-1419360664443
 AwsCredentialFile=/home/jbbowen/.elasticbeanstalk/aws_credential_file
 DevToolsEndpoint=git.elasticbeanstalk.us-west-2.amazonaws.com
 EnvironmentName=movementvalidationcloud
