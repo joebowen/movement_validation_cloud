@@ -62,8 +62,8 @@ urlpatterns = patterns('',
     url(r'^Types/(?P<pk>[0-9]+)/$', views.TypeListView.as_view()),
     url(r'^Types/$', views.TypeListViewAll.as_view()),
     
-    url(r'^Videoattributess/(?P<pk>[0-9]+)/$', views.VideoattributesListView.as_view()),
-    url(r'^Videoattributess/$', views.VideoattributesListViewAll.as_view()),
+    url(r'^Videoattributes/(?P<pk>[0-9]+)/$', views.VideoattributesListView.as_view()),
+    url(r'^Videoattributes/$', views.VideoattributesListViewAll.as_view()),
     
     url(r'^Worms/(?P<pk>[0-9]+)/$', views.WormListView.as_view()),
     url(r'^Worms/$', views.WormListViewAll.as_view()),
