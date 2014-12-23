@@ -11,7 +11,7 @@ class StrainSerializer(serializers.ModelSerializer):
 
 class WormSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    strain = serializers.PrimaryKeyRelatedField(queryset=Worm.objects.all())
+    strain = serializers.PrimaryKeyRelatedField(queryset=Strain.objects.all())
 
     class Meta:
         model = Worm

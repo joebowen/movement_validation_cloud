@@ -15,8 +15,11 @@ class StrainListView(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
-    queryset = Strain.objects.all()
     serializer_class = StrainSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Strain.objects.filter(pk=pk)
 
 class StrainListViewAll(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -32,6 +35,9 @@ class WormListView(generics.ListCreateAPIView):
     queryset = Worm.objects.all()
     serializer_class = WormSerializer
 
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Worm.objects.filter(pk=pk)
 
 class WormListViewAll(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
