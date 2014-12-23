@@ -8,7 +8,7 @@ LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
 STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
 
 class Strain(models.Model):
-    owner = models.ForeignKey(User)
+    #owner = models.ForeignKey(User)
     timestamp = models.DateTimeField(auto_now_add=True)
     strain_name = models.CharField(max_length=100, null=False, default='')
     gene = models.CharField(max_length=20, null=True)
@@ -18,7 +18,7 @@ class Strain(models.Model):
     simulated = models.CharField(max_length=1, null=False)
 
 class Worm(models.Model):
-    owner = models.ForeignKey(User)
+    #owner = models.ForeignKey(User)
     strain = models.ForeignKey(Strain)
     timestamp = models.DateTimeField(auto_now_add=True)
     sex = models.CharField(max_length=20, null=True)

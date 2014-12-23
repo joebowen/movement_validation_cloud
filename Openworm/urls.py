@@ -1,5 +1,6 @@
 from django.conf.urls import url, patterns
 from Openworm import views
+from django.contrib.auth.models import User
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
@@ -9,4 +10,5 @@ urlpatterns = patterns('',
 
     url(r'^worms/(?P<pk>[0-9]+)/$', views.WormListView.as_view()),
     url(r'^worms/$', views.WormListViewAll.as_view()),
+
 )
