@@ -16,3 +16,7 @@ eb start
 
 eb status --verbose
 
+python manage.py flush
+python manage.py syncdb
+
+
