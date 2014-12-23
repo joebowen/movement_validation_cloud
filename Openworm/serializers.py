@@ -7,7 +7,7 @@ class StrainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Strain
-        fields = ('owner', 'strain_name', 'gene', 'genotype', 'allele', 'chromosome', 'simulated')
+        fields = ('id', 'owner', 'timestamp', 'strain_name', 'gene', 'genotype', 'allele', 'chromosome', 'simulated')
 
 class WormSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -15,4 +15,4 @@ class WormSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Worm
-        fields = ('owner', 'strain', 'sex', 'thawed_date', 'generations_since_thawing','habituation')
+        fields = ('id', 'owner', 'timestamp', 'strain', 'sex', 'thawed_date', 'generations_since_thawing','habituation')
