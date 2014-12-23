@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from models import Strain, Worm, LANGUAGE_CHOICES, STYLE_CHOICES
+from models import *
 from django.contrib.auth.models import User
 
 class StrainSerializer(serializers.ModelSerializer):
@@ -7,12 +7,19 @@ class StrainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Strain
-        fields = ('id', 'timestamp', 'strain_name', 'gene', 'genotype', 'allele', 'chromosome', 'simulated')
+        fields = ('id', 'strain_name', 'timestamp', 'gene', 'genotype', 'allele', 'chromosome', 'simulated')
 
 class WormSerializer(serializers.ModelSerializer):
     #owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    strain = serializers.PrimaryKeyRelatedField(queryset=Strain.objects.all())
+    strainkey = serializers.PrimaryKeyRelatedField(queryset=Strain.objects.all())
 
     class Meta:
         model = Worm
-        fields = ('id', 'timestamp', 'strain', 'sex', 'thawed_date', 'generations_since_thawing','habituation')
+        fields = ('id', 'timestamp', 'strainkey', 'sex', 'thaweddate', 'generationssincethawing','habituation')
+
+class AspectSerializer(serializers.ModelSerializer):
+    #owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
+    class Meta:
+        model = Aspect
+        fields = ('id', 'name', 'description')

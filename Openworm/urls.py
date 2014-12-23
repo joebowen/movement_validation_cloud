@@ -11,4 +11,6 @@ urlpatterns = patterns('',
     url(r'^worms/(?P<pk>[0-9]+)/$', views.WormListView.as_view()),
     url(r'^worms/$', views.WormListViewAll.as_view()),
 
+    url(r'^aspects/(?P<pk>[0-9]+)/$', views.AspectListView.as_view()),
+    url(r'^aspects/$', views.AspectListViewAll.as_view()),
 )

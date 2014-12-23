@@ -1,6 +1,6 @@
 from rest_framework import authentication, permissions
-from models import Strain, Worm
-from serializers import StrainSerializer, WormSerializer
+from models import *
+from serializers import *
 from django.http import HttpResponse
 from rest_framework import generics
 
@@ -41,3 +41,21 @@ class WormListViewAll(generics.ListAPIView):
 
     queryset = Worm.objects.all()
     serializer_class = WormSerializer
+
+class AspectListView(generics.ListCreateAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    queryset = Aspect.objects.all()
+    serializer_class = AspectSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Aspect.objects.filter(pk=pk)
+
+class AspectListViewAll(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.AllowAny,)
+
+    queryset = Aspect.objects.all()
+    serializer_class = AspectSerializer
