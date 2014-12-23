@@ -1,11 +1,28 @@
 from rest_framework import authentication, permissions
 from models import *
 from serializers import *
-from django.http import HttpResponse
+from django.shortcuts import render
 from rest_framework import generics
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the poll index.")
+    from urls import urlpatterns #this import should be inside the function to avoid an import loop
+    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+    return render(request, "links.html", {"links":nice_urls})
+
+def get_urls(raw_urls, urlbase=''):
+    '''Recursively builds a list of all the urls in the current project and the name of their associated view'''
+    from operator import itemgetter
+    nice_urls = []
+    for entry in raw_urls:
+        fullurl = (urlbase + entry.regex.pattern).replace('^','')
+        fullurl = fullurl.replace('/(?P<pk>[0-9]+)/','/0/')
+        fullurl = fullurl.replace('/$','/')
+        fullurl = fullurl.replace('$','/')
+        if entry.callback: #if it points to a view
+            viewname = entry.callback.func_name
+            nice_urls.append({"pattern": fullurl})
+    nice_urls = sorted(nice_urls, key=itemgetter('pattern')) #sort alphabetically
+    return nice_urls
 
 class AspectListView(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
