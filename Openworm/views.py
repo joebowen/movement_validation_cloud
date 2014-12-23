@@ -7,7 +7,7 @@ from rest_framework import generics
 def index(request):
     from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
     nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
-    return render(request, "links.html", {"links":nice_urls})
+    return render(request, "Openworm/links.html", {"links":nice_urls})
 
 def get_urls(raw_urls, urlbase=''):
     '''Recursively builds a list of all the urls in the current project and the name of their associated view'''
