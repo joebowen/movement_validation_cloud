@@ -4,7 +4,6 @@ from serializers import *
 from django.shortcuts import render
 from rest_framework import generics
 
-
 def index(request):
     from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
     nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
