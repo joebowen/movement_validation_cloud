@@ -1,5 +1,7 @@
 {% extends "Openworm/bootstrap_dashboard.html" %}
 
+{% load Openworm_extras %}
+
 {% block title %}{{ Name }}{% endblock %}
 {% block header-title %}
 
@@ -30,14 +32,16 @@
 <dl>
     <dt>
         <div id="headerBox" style="margin:0px auto; overflow:hidden; width:100%">
-            <div id="column" style="float:left; margin:0; width:{{ col_width }}%;">
+            <div id="headercolumn" style="float:left; margin:0; width:{{ col_width }}%;">
                 Link
             </div>
         {% with model_list|first as model %}
-            {% for item in model %}
-                <div id="column{{ item }}" style="float:left; margin:0; width:{{ col_width }}%;">
-                    {{ item }}
-                </div>
+            {% for key,item in model.items|sort %}
+                {% if key != "id" %}
+                    <div id="column{{ key }}" style="float:left; margin:0; width:{{ col_width }}%;">
+                        {{ key }}
+                    </div>
+                {% endif %}
             {% endfor %}
         {% endwith %}
         </div>
@@ -46,7 +50,7 @@
     {% for model in model_list %}
     <dt>
         <div id="contentBox" style="margin:0px auto; overflow:hidden; width:100%">
-            <div id="column{{ mkey }}" style="float:left; margin:0; width:{{ col_width }}%;">
+            <div id="tablecolumn" style="float:left; margin:0; width:{{ col_width }}%;">
                 {% if id == -1 %}
                     <a href="/dashboard/{{ Name }}/{{ model.id }}">
                         {{ model.name }}
@@ -57,10 +61,12 @@
                     </a>
                 {% endif %}
             </div>
-            {% for key,item in model.items %}
-                <div id="column{{ key }}" style="float:left; margin:0; width:{{ col_width }}%;">
-                    {{ item }}
-                </div>
+            {% for key,item in model.items|sort %}
+                {% if key != "id" %}
+                    <div id="tablecolumn{{ key }}" style="float:left; margin:0; width:{{ col_width }}%;">
+                        {{ item }}
+                    </div>
+                {% endif %}
             {% endfor %}
         </div>
     </dt>
