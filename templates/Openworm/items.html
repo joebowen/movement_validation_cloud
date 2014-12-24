@@ -47,9 +47,15 @@
     <dt>
         <div id="contentBox" style="margin:0px auto; overflow:hidden; width:100%">
             <div id="column{{ mkey }}" style="float:left; margin:0; width:{{ col_width }}%;">
-                <a href="/dashboard/{{ Name }}/{{ model.id }}">
-                    {{ model.name }}
-                </a>
+                {% if id == -1 %}
+                    <a href="/dashboard/{{ Name }}/{{ model.id }}">
+                        {{ model.name }}
+                    </a>
+                {% else %}
+                    <a href="/api/{{ Name }}/{{ model.id }}">
+                        {{ model.name }}
+                    </a>
+                {% endif %}
             </div>
             {% for key,item in model.items %}
                 <div id="column{{ key }}" style="float:left; margin:0; width:{{ col_width }}%;">
