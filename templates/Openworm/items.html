@@ -1,0 +1,63 @@
+{% extends "Openworm/bootstrap_dashboard.html" %}
+
+{% block title %}{{ Name }}{% endblock %}
+{% block header-title %}
+
+    {% if id != -1 %}
+        <a href="/dashboard/{{ Name }}">
+            {{ Name }}
+        </a>
+         / {{ id }}
+    {% endif %}
+    {% if id == -1 %}
+        <a href="/dashboard/{{ Name }}">
+            {{ Name }}
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block header-buttons %}
+<div class="btn-group" role="group" aria-label="...">
+    <button type="button" class="btn btn-default" onclick="window.location.href='/api/{{ Name }}'; return false;">New</button>
+    {% if id != -1 %}
+        <button type="button" class="btn btn-default">Edit</button>
+        <button type="button" class="btn btn-default">Delete</button>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<dl>
+    <dt>
+        <div id="headerBox" style="margin:0px auto; overflow:hidden; width:100%">
+            <div id="column" style="float:left; margin:0; width:{{ col_width }}%;">
+                Link
+            </div>
+        {% with model_list|first as model %}
+            {% for item in model %}
+                <div id="column{{ item }}" style="float:left; margin:0; width:{{ col_width }}%;">
+                    {{ item }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+        </div>
+    </dt>
+
+    {% for model in model_list %}
+    <dt>
+        <div id="contentBox" style="margin:0px auto; overflow:hidden; width:100%">
+            <div id="column{{ mkey }}" style="float:left; margin:0; width:{{ col_width }}%;">
+                <a href="/dashboard/{{ Name }}/{{ model.id }}">
+                    {{ model.name }}
+                </a>
+            </div>
+            {% for key,item in model.items %}
+                <div id="column{{ key }}" style="float:left; margin:0; width:{{ col_width }}%;">
+                    {{ item }}
+                </div>
+            {% endfor %}
+        </div>
+    </dt>
+    {% endfor %}
+</dl>
+{% endblock %}

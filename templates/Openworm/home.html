@@ -1,0 +1,19 @@
+{% extends "Openworm/bootstrap_dashboard.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <script src="/static/js/holder.js"></script>
+
+    <h1 class="page-header">Dashboard</h1>
+
+    <p class="sub-header">Welcome to the Openworm Movement Validation Dashboard</p>
+
+    <ul>
+    {% for link in links %}
+    <li>
+    <a href="/dashboard/{{link.pattern}}">{{link.pattern}}</a>
+    </li>
+    {% endfor%}
+    </ul>
+{% endblock %}

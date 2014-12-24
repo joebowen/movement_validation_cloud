@@ -8,7 +8,10 @@ from django.contrib.auth.models import User
 
 class Aspect(models.Model):
     #aspectkey = models.IntegerField(db_column='AspectKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     class Meta:
@@ -16,7 +19,10 @@ class Aspect(models.Model):
 
 class Bodypart(models.Model):
     #bodypartkey = models.IntegerField(db_column='BodyPartKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     startskeletonindex = models.FloatField(db_column='StartSkeletonIndex', blank=True, null=True)
@@ -28,7 +34,10 @@ class Bodypart(models.Model):
 
 class Category(models.Model):
     #categorykey = models.IntegerField(db_column='CategoryKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     class Meta:
@@ -36,7 +45,10 @@ class Category(models.Model):
 
 class Computervisionalgorithm(models.Model):
     #cvalgorithmkey = models.IntegerField(db_column='CVAlgorithmKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     framebyframe = models.CharField(db_column='FrameByFrame', max_length=1)
@@ -48,7 +60,10 @@ class Computervisionalgorithm(models.Model):
 
 class Direction(models.Model):
    # directionkey = models.IntegerField(db_column='DirectionKey', primary_key=True)
-   timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+   def get_subclass_name(self):
+        return self.__class__.__name__
+    
+   timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
    name = models.CharField(db_column='Name', max_length=20, blank=True)
    description = models.CharField(db_column='Description', max_length=500, blank=True)
    class Meta:
@@ -57,17 +72,26 @@ class Direction(models.Model):
 class Experimenter(models.Model):
     #experimenterkey = models.IntegerField(db_column='ExperimenterKey', primary_key=True)
     labkey = models.ForeignKey('Lab', db_column='LabKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     class Meta:
         db_table = 'Experimenter'
 
 class Featuresperplatewireframe(models.Model):
     #featuresperplatewireframe = models.IntegerField(db_column='FeaturesPerPlateWireframe', primary_key=True)
     platefeaturekey = models.ForeignKey('Platefeature', db_column='PlateFeatureKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     value = models.TextField(db_column='Value', blank=True)
     platewireframevideokey = models.ForeignKey('Platewireframevideo', db_column='PlateWireframeVideoKey')
     class Meta:
@@ -77,7 +101,10 @@ class Featuresperwormwireframe(models.Model):
     #featuresperwormwireframekey = models.IntegerField(db_column='FeaturesPerWormWireframeKey', primary_key=True)
     wormfeaturekey = models.ForeignKey('Wormfeature', db_column='WormFeatureKey')
     wormwireframekey = models.ForeignKey('Wormwireframevideo', db_column='WormWireframeKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     value = models.TextField(db_column='Value', blank=True)
     class Meta:
         db_table = 'FeaturesPerWormWireframe'
@@ -85,7 +112,10 @@ class Featuresperwormwireframe(models.Model):
 class Histogramsperplatewireframe(models.Model):
     #histogramsperplatewireframekey = models.IntegerField(db_column='HistogramsPerPlateWireframeKey', primary_key=True)
     platewireframevideokey = models.ForeignKey('Platewireframevideo', db_column='PlateWireframeVideoKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     bins = models.TextField(db_column='Bins', blank=True)
     counts = models.TextField(db_column='Counts', blank=True)
     class Meta:
@@ -97,7 +127,10 @@ class Histogramsperwormwireframe(models.Model):
     wormfeaturekey = models.ForeignKey('Wormfeature', db_column='WormFeatureKey')
     wormwireframekey = models.ForeignKey('Wormwireframevideo', db_column='WormWireframeKey')
     signkey = models.ForeignKey('Sign', db_column='SignKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     bins = models.TextField(db_column='Bins', blank=True)
     counts = models.TextField(db_column='Counts', blank=True)
     class Meta:
@@ -105,7 +138,10 @@ class Histogramsperwormwireframe(models.Model):
 
 class Lab(models.Model):
     #labkey = models.IntegerField(db_column='LabKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     address = models.CharField(db_column='Address', max_length=20, blank=True)
@@ -116,7 +152,10 @@ class Measurementsperwormwireframe(models.Model):
     #measurementsperwormwireframe = models.IntegerField(db_column='MeasurementsPerWormWireframe', primary_key=True)
     wormmeasurementkey = models.ForeignKey('Wormmeasurement', db_column='WormMeasurementKey')
     wormwireframekey = models.ForeignKey('Wormwireframevideo', db_column='WormWireframeKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     value = models.TextField(db_column='Value', blank=True)
     class Meta:
         db_table = 'MeasurementsPerWormWireframe'
@@ -125,7 +164,10 @@ class Plate(models.Model):
     #platekey = models.IntegerField(db_column='PlateKey', primary_key=True)
     experimenterkey = models.ForeignKey(Experimenter, db_column='ExperimenterKey')
     wormlistkey = models.ForeignKey('Wormlist', db_column='WormListKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     sampletype = models.CharField(db_column='SampleType', max_length=18, blank=True)
     startdatetime = models.DateTimeField(db_column='StartDateTime', blank=True, null=True)
     copyright = models.CharField(db_column='Copyright', max_length=20, blank=True)
@@ -143,7 +185,10 @@ class Plate(models.Model):
 
 class Platefeature(models.Model):
     #platefeaturekey = models.IntegerField(db_column='PlateFeatureKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     title = models.CharField(db_column='Title', max_length=20, blank=True)
@@ -155,7 +200,10 @@ class Platerawvideo(models.Model):
     #platerawvideokey = models.IntegerField(db_column='PlateRawVideoKey', primary_key=True)
     platekey = models.ForeignKey(Plate, db_column='PlateKey')
     videometadatakey = models.ForeignKey('Videoattributes', db_column='VideoMetadataKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     videofile = models.TextField(db_column='VideoFile', blank=True)
     class Meta:
         db_table = 'PlateRawVideo'
@@ -164,15 +212,21 @@ class Platewireframevideo(models.Model):
     #platewireframevideokey = models.IntegerField(db_column='PlateWireframeVideoKey', primary_key=True)
     platerawvideokey = models.ForeignKey(Platerawvideo, db_column='PlateRawVideoKey')
     cvalgorithmkey = models.ForeignKey(Computervisionalgorithm, db_column='CVAlgorithmKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
-    wireframevideo = models.TextField(db_column='WireframeVideo', blank=True)    
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    wireframevideo = models.TextField(db_column='WireframeVideo', blank=True)
     droppedframeinfo = models.TextField(db_column='DroppedFrameInfo', blank=True)
     class Meta:
         db_table = 'PlateWireframeVideo'
 
 class Sign(models.Model):
     #signkey = models.IntegerField(db_column='SignKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     class Meta:
@@ -180,7 +234,10 @@ class Sign(models.Model):
 
 class Strain(models.Model):
     #strainkey = models.IntegerField(db_column='StrainKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     strain_name = models.CharField(db_column='Strain_Name', max_length=100)
     gene = models.CharField(db_column='Gene', max_length=20, blank=True)
     genotype = models.TextField(db_column='Genotype', blank=True)
@@ -192,7 +249,10 @@ class Strain(models.Model):
 
 class Type(models.Model):
     #typekey = models.IntegerField(db_column='TypeKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     class Meta:
@@ -210,7 +270,10 @@ class User(models.Model):
 
 class Videoattributes(models.Model):
     #videometadatakey = models.CharField(db_column='VideoMetadataKey', primary_key=True, max_length=18)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     fps = models.IntegerField(db_column='FPS', blank=True, null=True)
     numframes = models.FloatField(db_column='NumFrames', blank=True, null=True)
     width = models.IntegerField(db_column='Width', blank=True, null=True)
@@ -221,7 +284,10 @@ class Videoattributes(models.Model):
 
 class Worm(models.Model):
     #wormkey = models.IntegerField(db_column='WormKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     strainkey = models.ForeignKey(Strain, db_column='StrainKey')
     sex = models.CharField(db_column='Sex', max_length=20, blank=True)
     thaweddate = models.DateTimeField(db_column='ThawedDate', blank=True, null=True)
@@ -238,7 +304,10 @@ class Wormfeature(models.Model):
     aspectkey = models.ForeignKey(Aspect, db_column='AspectKey')
     bodypartkey = models.ForeignKey(Bodypart, db_column='BodyPartKey')
     featureindex = models.FloatField(db_column='FeatureIndex', blank=True, null=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     title = models.CharField(db_column='Title', max_length=20, blank=True)
     shorttitle = models.CharField(db_column='ShortTitle', max_length=20, blank=True)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
@@ -258,7 +327,10 @@ class Worminteraction(models.Model):
     #worminteractionkey = models.CharField(db_column='WormInteractionKey', primary_key=True, max_length=18)
     platewireframevideokey = models.ForeignKey(Platewireframevideo, db_column='PlateWireframeVideoKey')
     wormlistkey = models.ForeignKey('Wormlist', db_column='WormListKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     framebyframewormparticipation = models.TextField(db_column='FrameByFrameWormParticipation', blank=True)
     area = models.TextField(db_column='Area', blank=True)
     interactiontype = models.CharField(db_column='InteractionType', max_length=20, blank=True)
@@ -270,14 +342,20 @@ class Worminteraction(models.Model):
 class Wormlist(models.Model):
     #wormlistkey = models.IntegerField(db_column='WormListKey', primary_key=True)
     wormkey = models.ForeignKey(Worm, db_column='WormKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     wormlist_identifier = models.IntegerField(db_column='WormList_Identifier')
     class Meta:
         db_table = 'WormList'
 
 class Wormmeasurement(models.Model):
     #wormmeasurementskey = models.IntegerField(db_column='WormMeasurementsKey', primary_key=True)
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     class Meta:
@@ -286,7 +364,10 @@ class Wormmeasurement(models.Model):
 class Wormwireframevideo(models.Model):
     #wormwireframekey = models.IntegerField(db_column='WormWireframeKey', primary_key=True)
     platewireframevideokey = models.ForeignKey(Platewireframevideo, db_column='PlateWireframeVideoKey')
-    timestamp = models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    def get_subclass_name(self):
+        return self.__class__.__name__
+    
+    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     wireframevideo = models.TextField(db_column='WireframeVideo', blank=True)
     droppedframeinfo = models.TextField(db_column='DroppedFrameInfo', blank=True)
     class Meta:
