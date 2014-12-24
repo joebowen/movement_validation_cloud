@@ -32,13 +32,13 @@
 <dl>
     <dt>
         <div id="headerBox" style="margin:0px auto; overflow:hidden; width:100%">
-            <div id="headercolumn" style="float:left; margin:0; width:{{ col_width }}%;">
+            <div id="headercolumn" style="float:left; margin:0; overflow:hidden; width:{{ col_width }}%;">
                 Link
             </div>
         {% with model_list|first as model %}
             {% for key,item in model.items|sort %}
                 {% if key != "id" %}
-                    <div id="column{{ key }}" style="float:left; margin:0; width:{{ col_width }}%;">
+                    <div id="column{{ key }}" style="float:left; margin:0; overflow:hidden; width:{{ col_width }}%;">
                         {{ key }}
                     </div>
                 {% endif %}
@@ -50,7 +50,7 @@
     {% for model in model_list %}
     <dt>
         <div id="contentBox" style="margin:0px auto; overflow:hidden; width:100%">
-            <div id="tablecolumn" style="float:left; margin:0; width:{{ col_width }}%;">
+            <div id="tablecolumn" style="float:left; margin:0px auto; overflow:hidden; width:{{ col_width }}%;">
                 {% if id == -1 %}
                     <a href="/dashboard/{{ Name }}/{{ model.id }}">
                         {{ model.name }}
@@ -63,7 +63,7 @@
             </div>
             {% for key,item in model.items|sort %}
                 {% if key != "id" %}
-                    <div id="tablecolumn{{ key }}" style="float:left; margin:0; width:{{ col_width }}%;">
+                    <div id="tablecolumn{{ key }}" style="float:left; margin:0px auto; min-height: 1px; overflow:hidden; width:{{ col_width }}%;">
                         {{ item }}
                     </div>
                 {% endif %}
