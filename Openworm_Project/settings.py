@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'Openworm',
     'rest_framework',
+    'bootstrap3',
 
 )
 
