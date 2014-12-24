@@ -41,7 +41,6 @@ INSTALLED_APPS = (
     'Openworm',
     'rest_framework',
     'bootstrap3',
-
 )
 
 MIDDLEWARE_CLASSES = (
