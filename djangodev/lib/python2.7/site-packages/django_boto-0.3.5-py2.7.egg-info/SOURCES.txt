@@ -1,0 +1,16 @@
+MANIFEST.in
+README.md
+setup.cfg
+setup.py
+django_boto/__init__.py
+django_boto/models.py
+django_boto/settings.py
+django_boto/tests.py
+django_boto.egg-info/PKG-INFO
+django_boto.egg-info/SOURCES.txt
+django_boto.egg-info/dependency_links.txt
+django_boto.egg-info/requires.txt
+django_boto.egg-info/top_level.txt
+django_boto/s3/__init__.py
+django_boto/s3/shortcuts.py
+django_boto/s3/storage.py

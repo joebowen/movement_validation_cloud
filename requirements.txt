@@ -37,4 +37,4 @@ watchdog==0.8.2
 wsgiref==0.1.2
 ##zenmap==6.46
 djangorestframework==3.0.2
-django-boto==0.3.8
+django-boto==0.3.5
