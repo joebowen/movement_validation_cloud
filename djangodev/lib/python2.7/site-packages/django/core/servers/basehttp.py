@@ -7,27 +7,29 @@ This is a simple server for use in testing or debugging Django apps. It hasn't
 been reviewed for security issues. DON'T USE IT FOR PRODUCTION USE!
 """
 
-import os
+from __future__ import unicode_literals
+
+from io import BytesIO
 import socket
 import sys
 import traceback
-import urllib
-import urlparse
-from SocketServer import ThreadingMixIn
 from wsgiref import simple_server
-from wsgiref.util import FileWrapper   # for backwards compatibility
+from wsgiref.util import FileWrapper   # NOQA: for backwards compatibility
 
-import django
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.color import color_style
 from django.core.wsgi import get_wsgi_application
-from django.utils.importlib import import_module
-from django.utils._os import safe_join
-from django.views import static
+from django.utils import six
+from django.utils.module_loading import import_string
+from django.utils.six.moves import socketserver
 
-from django.contrib.staticfiles import handlers
+__all__ = ('WSGIServer', 'WSGIRequestHandler', 'MAX_SOCKET_CHUNK_SIZE')
 
-__all__ = ['WSGIServer', 'WSGIRequestHandler']
+
+# If data is too large, socket will choke, so write chunks no larger than 32MB
+# at a time. The rationale behind the 32MB can be found on Django's Trac:
+# https://code.djangoproject.com/ticket/5596#comment:4
+MAX_SOCKET_CHUNK_SIZE = 32 * 1024 * 1024  # 32 MB
 
 
 def get_internal_wsgi_application():
@@ -49,35 +51,28 @@ def get_internal_wsgi_application():
     app_path = getattr(settings, 'WSGI_APPLICATION')
     if app_path is None:
         return get_wsgi_application()
-    module_name, attr = app_path.rsplit('.', 1)
+
     try:
-        mod = import_module(module_name)
-    except ImportError, e:
-        raise ImproperlyConfigured(
-            "WSGI application '%s' could not be loaded; "
-            "could not import module '%s': %s" % (app_path, module_name, e))
-    try:
-        app = getattr(mod, attr)
-    except AttributeError, e:
-        raise ImproperlyConfigured(
-            "WSGI application '%s' could not be loaded; "
-            "can't find '%s' in module '%s': %s"
-            % (app_path, attr, module_name, e))
-
-    return app
-
-
-class WSGIServerException(Exception):
-    pass
+        return import_string(app_path)
+    except ImportError as e:
+        msg = (
+            "WSGI application '%(app_path)s' could not be loaded; "
+            "Error importing module: '%(exception)s'" % ({
+                'app_path': app_path,
+                'exception': e,
+            })
+        )
+        six.reraise(ImproperlyConfigured, ImproperlyConfigured(msg),
+                    sys.exc_info()[2])
 
 
 class ServerHandler(simple_server.ServerHandler, object):
-    error_status = "500 INTERNAL SERVER ERROR"
+    error_status = str("500 INTERNAL SERVER ERROR")
 
     def write(self, data):
-        """'write()' callable as specified by PEP 333"""
+        """'write()' callable as specified by PEP 3333"""
 
-        assert isinstance(data, str), "write() argument must be string"
+        assert isinstance(data, bytes), "write() argument must be bytestring"
 
         if not self.status:
             raise AssertionError("write() before start_response()")
@@ -90,28 +85,31 @@ class ServerHandler(simple_server.ServerHandler, object):
             self.bytes_sent += len(data)
 
         # XXX check Content-Length and truncate if too many bytes written?
-
-        # If data is too large, socket will choke, so write chunks no larger
-        # than 32MB at a time.
-        length = len(data)
-        if length > 33554432:
-            offset = 0
-            while offset < length:
-                chunk_size = min(33554432, length)
-                self._write(data[offset:offset+chunk_size])
-                self._flush()
-                offset += chunk_size
-        else:
-            self._write(data)
+        data = BytesIO(data)
+        for chunk in iter(lambda: data.read(MAX_SOCKET_CHUNK_SIZE), b''):
+            self._write(chunk)
             self._flush()
 
     def error_output(self, environ, start_response):
         super(ServerHandler, self).error_output(environ, start_response)
         return ['\n'.join(traceback.format_exception(*sys.exc_info()))]
 
+    # Backport of http://hg.python.org/cpython/rev/d5af1b235dab. See #16241.
+    # This can be removed when support for Python <= 2.7.3 is deprecated.
+    def finish_response(self):
+        try:
+            if not self.result_is_file() or not self.sendfile():
+                for data in self.result:
+                    self.write(data)
+                self.finish_content()
+        finally:
+            self.close()
+
 
 class WSGIServer(simple_server.WSGIServer, object):
     """BaseHTTPServer that implements the Python WSGI protocol"""
+
+    request_queue_size = 10
 
     def __init__(self, *args, **kwargs):
         if kwargs.pop('ipv6', False):
@@ -120,63 +118,21 @@ class WSGIServer(simple_server.WSGIServer, object):
 
     def server_bind(self):
         """Override server_bind to store the server name."""
-        try:
-            super(WSGIServer, self).server_bind()
-        except Exception, e:
-            raise WSGIServerException(e)
+        super(WSGIServer, self).server_bind()
         self.setup_environ()
 
 
 class WSGIRequestHandler(simple_server.WSGIRequestHandler, object):
 
     def __init__(self, *args, **kwargs):
-        from django.conf import settings
-        self.admin_media_prefix = urlparse.urljoin(settings.STATIC_URL, 'admin/')
-        # We set self.path to avoid crashes in log_message() on unsupported
-        # requests (like "OPTIONS").
-        self.path = ''
         self.style = color_style()
         super(WSGIRequestHandler, self).__init__(*args, **kwargs)
 
-    def get_environ(self):
-        env = self.server.base_environ.copy()
-        env['SERVER_PROTOCOL'] = self.request_version
-        env['REQUEST_METHOD'] = self.command
-        if '?' in self.path:
-            path,query = self.path.split('?',1)
-        else:
-            path,query = self.path,''
-
-        env['PATH_INFO'] = urllib.unquote(path)
-        env['QUERY_STRING'] = query
-        env['REMOTE_ADDR'] = self.client_address[0]
-
-        if self.headers.typeheader is None:
-            env['CONTENT_TYPE'] = self.headers.type
-        else:
-            env['CONTENT_TYPE'] = self.headers.typeheader
-
-        length = self.headers.getheader('content-length')
-        if length:
-            env['CONTENT_LENGTH'] = length
-
-        for h in self.headers.headers:
-            k,v = h.split(':',1)
-            k=k.replace('-','_').upper(); v=v.strip()
-            if k in env:
-                continue                    # skip content length, type,etc.
-            if 'HTTP_'+k in env:
-                env['HTTP_'+k] += ','+v     # comma-separate multiple headers
-            else:
-                env['HTTP_'+k] = v
-        return env
+    def address_string(self):
+        # Short-circuit parent method to not call socket.getfqdn
+        return self.client_address[0]
 
     def log_message(self, format, *args):
-        # Don't bother logging requests for admin images or the favicon.
-        if (self.path.startswith(self.admin_media_prefix)
-                or self.path == '/favicon.ico'):
-            return
-
         msg = "[%s] %s\n" % (self.log_date_time_string(), format % args)
 
         # Utilize terminal colors, if available
@@ -200,52 +156,10 @@ class WSGIRequestHandler(simple_server.WSGIRequestHandler, object):
         sys.stderr.write(msg)
 
 
-class AdminMediaHandler(handlers.StaticFilesHandler):
-    """
-    WSGI middleware that intercepts calls to the admin media directory, as
-    defined by the STATIC_URL setting, and serves those images.
-    Use this ONLY LOCALLY, for development! This hasn't been tested for
-    security and is not super efficient.
-
-    This is pending for deprecation since 1.3.
-    """
-    def get_base_dir(self):
-        return os.path.join(django.__path__[0], 'contrib', 'admin', 'static', 'admin')
-
-    def get_base_url(self):
-        from django.conf import settings
-        return urlparse.urljoin(settings.STATIC_URL, 'admin/')
-
-    def file_path(self, url):
-        """
-        Returns the path to the media file on disk for the given URL.
-
-        The passed URL is assumed to begin with ``self.base_url``.  If the
-        resulting file path is outside the media directory, then a ValueError
-        is raised.
-        """
-        relative_url = url[len(self.base_url[2]):]
-        relative_path = urllib.url2pathname(relative_url)
-        return safe_join(self.base_dir, relative_path)
-
-    def serve(self, request):
-        document_root, path = os.path.split(self.file_path(request.path))
-        return static.serve(request, path, document_root=document_root)
-
-    def _should_handle(self, path):
-        """
-        Checks if the path should be handled. Ignores the path if:
-
-        * the host is provided as part of the base_url
-        * the request's path isn't under the base path
-        """
-        return path.startswith(self.base_url[2]) and not self.base_url[1]
-
-
 def run(addr, port, wsgi_handler, ipv6=False, threading=False):
     server_address = (addr, port)
     if threading:
-        httpd_cls = type('WSGIServer', (ThreadingMixIn, WSGIServer), {})
+        httpd_cls = type(str('WSGIServer'), (socketserver.ThreadingMixIn, WSGIServer), {})
     else:
         httpd_cls = WSGIServer
     httpd = httpd_cls(server_address, WSGIRequestHandler, ipv6=ipv6)

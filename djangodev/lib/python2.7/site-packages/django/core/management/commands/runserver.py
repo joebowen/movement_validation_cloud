@@ -1,12 +1,21 @@
+from __future__ import unicode_literals
+
 from optparse import make_option
+from datetime import datetime
+import errno
 import os
 import re
 import sys
 import socket
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core.servers.basehttp import AdminMediaHandler, run, WSGIServerException, get_internal_wsgi_application
+from django.core.servers.basehttp import run, get_internal_wsgi_application
+from django.db import connections, DEFAULT_DB_ALIAS
+from django.db.migrations.executor import MigrationExecutor
 from django.utils import autoreload
+from django.utils.encoding import get_system_encoding
+from django.utils import six
+from django.core.exceptions import ImproperlyConfigured
 
 naiveip_re = re.compile(r"""^(?:
 (?P<addr>
@@ -17,10 +26,10 @@ naiveip_re = re.compile(r"""^(?:
 DEFAULT_PORT = "8000"
 
 
-class BaseRunserverCommand(BaseCommand):
+class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--ipv6', '-6', action='store_true', dest='use_ipv6', default=False,
-            help='Tells Django to use a IPv6 address.'),
+            help='Tells Django to use an IPv6 address.'),
         make_option('--nothreading', action='store_false', dest='use_threading', default=True,
             help='Tells Django to NOT use threading.'),
         make_option('--noreload', action='store_false', dest='use_reloader', default=True,
@@ -30,7 +39,7 @@ class BaseRunserverCommand(BaseCommand):
     args = '[optional port number, or ipaddr:port]'
 
     # Validation is called explicitly each time the server is reloaded.
-    requires_model_validation = False
+    requires_system_checks = False
 
     def get_handler(self, *args, **options):
         """
@@ -39,6 +48,11 @@ class BaseRunserverCommand(BaseCommand):
         return get_internal_wsgi_application()
 
     def handle(self, addrport='', *args, **options):
+        from django.conf import settings
+
+        if not settings.DEBUG and not settings.ALLOWED_HOSTS:
+            raise CommandError('You must set settings.ALLOWED_HOSTS if DEBUG is False.')
+
         self.use_ipv6 = options.get('use_ipv6')
         if self.use_ipv6 and not socket.has_ipv6:
             raise CommandError('Your Python does not support IPv6.')
@@ -64,7 +78,7 @@ class BaseRunserverCommand(BaseCommand):
                 elif self.use_ipv6 and not _fqdn:
                     raise CommandError('"%s" is not a valid IPv6 address.' % self.addr)
         if not self.addr:
-            self.addr = self.use_ipv6 and '::1' or '127.0.0.1'
+            self.addr = '::1' if self.use_ipv6 else '127.0.0.1'
             self._raw_ipv6 = bool(self.use_ipv6)
         self.run(*args, **options)
 
@@ -85,18 +99,27 @@ class BaseRunserverCommand(BaseCommand):
 
         threading = options.get('use_threading')
         shutdown_message = options.get('shutdown_message', '')
-        quit_command = (sys.platform == 'win32') and 'CTRL-BREAK' or 'CONTROL-C'
+        quit_command = 'CTRL-BREAK' if sys.platform == 'win32' else 'CONTROL-C'
 
-        self.stdout.write("Validating models...\n\n")
+        self.stdout.write("Performing system checks...\n\n")
         self.validate(display_num_errors=True)
+        try:
+            self.check_migrations()
+        except ImproperlyConfigured:
+            pass
+        now = datetime.now().strftime('%B %d, %Y - %X')
+        if six.PY2:
+            now = now.decode(get_system_encoding())
         self.stdout.write((
+            "%(started_at)s\n"
             "Django version %(version)s, using settings %(settings)r\n"
-            "Development server is running at http://%(addr)s:%(port)s/\n"
+            "Starting development server at http://%(addr)s:%(port)s/\n"
             "Quit the server with %(quit_command)s.\n"
         ) % {
+            "started_at": now,
             "version": self.get_version(),
             "settings": settings.SETTINGS_MODULE,
-            "addr": self._raw_ipv6 and '[%s]' % self.addr or self.addr,
+            "addr": '[%s]' % self.addr if self._raw_ipv6 else self.addr,
             "port": self.port,
             "quit_command": quit_command,
         })
@@ -109,34 +132,35 @@ class BaseRunserverCommand(BaseCommand):
             handler = self.get_handler(*args, **options)
             run(self.addr, int(self.port), handler,
                 ipv6=self.use_ipv6, threading=threading)
-        except WSGIServerException, e:
+        except socket.error as e:
             # Use helpful error messages instead of ugly tracebacks.
             ERRORS = {
-                13: "You don't have permission to access that port.",
-                98: "That port is already in use.",
-                99: "That IP address can't be assigned-to.",
+                errno.EACCES: "You don't have permission to access that port.",
+                errno.EADDRINUSE: "That port is already in use.",
+                errno.EADDRNOTAVAIL: "That IP address can't be assigned-to.",
             }
             try:
-                error_text = ERRORS[e.args[0].args[0]]
-            except (AttributeError, KeyError):
+                error_text = ERRORS[e.errno]
+            except KeyError:
                 error_text = str(e)
-            sys.stderr.write(self.style.ERROR("Error: %s" % error_text) + '\n')
+            self.stderr.write("Error: %s" % error_text)
             # Need to use an OS exit because sys.exit doesn't work in a thread
             os._exit(1)
         except KeyboardInterrupt:
             if shutdown_message:
-                self.stdout.write("%s\n" % shutdown_message)
+                self.stdout.write(shutdown_message)
             sys.exit(0)
 
-class Command(BaseRunserverCommand):
-    option_list = BaseRunserverCommand.option_list + (
-        make_option('--adminmedia', dest='admin_media_path', default='',
-            help='Specifies the directory from which to serve admin media.'),
-    )
+    def check_migrations(self):
+        """
+        Checks to see if the set of migrations on disk matches the
+        migrations in the database. Prints a warning if they don't match.
+        """
+        executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+        plan = executor.migration_plan(executor.loader.graph.leaf_nodes())
+        if plan:
+            self.stdout.write(self.style.NOTICE("\nYou have unapplied migrations; your app may not work properly until they are applied."))
+            self.stdout.write(self.style.NOTICE("Run 'python manage.py migrate' to apply them.\n"))
 
-    def get_handler(self, *args, **options):
-        """
-        Serves admin media like old-school (deprecation pending).
-        """
-        handler = super(Command, self).get_handler(*args, **options)
-        return AdminMediaHandler(handler, options.get('admin_media_path'))
+# Kept for backward compatibility
+BaseRunserverCommand = Command

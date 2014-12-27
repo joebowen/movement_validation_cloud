@@ -3,12 +3,14 @@ Built-in, globally-available admin actions.
 """
 
 from django.core.exceptions import PermissionDenied
+from django.contrib import messages
 from django.contrib.admin import helpers
-from django.contrib.admin.util import get_deleted_objects, model_ngettext
+from django.contrib.admin.utils import get_deleted_objects, model_ngettext
 from django.db import router
 from django.template.response import TemplateResponse
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy, ugettext as _
+
 
 def delete_selected(modeladmin, request, queryset):
     """
@@ -18,7 +20,7 @@ def delete_selected(modeladmin, request, queryset):
     deleteable objects, or, if the user has no permission one of the related
     childs (foreignkeys), a "permission denied" message.
 
-    Next, it delets all selected objects and redirects back to the change list.
+    Next, it deletes all selected objects and redirects back to the change list.
     """
     opts = modeladmin.model._meta
     app_label = opts.app_label
@@ -42,19 +44,19 @@ def delete_selected(modeladmin, request, queryset):
         n = queryset.count()
         if n:
             for obj in queryset:
-                obj_display = force_unicode(obj)
+                obj_display = force_text(obj)
                 modeladmin.log_deletion(request, obj, obj_display)
             queryset.delete()
             modeladmin.message_user(request, _("Successfully deleted %(count)d %(items)s.") % {
                 "count": n, "items": model_ngettext(modeladmin.opts, n)
-            })
+            }, messages.SUCCESS)
         # Return None to display the change list page again.
         return None
 
     if len(queryset) == 1:
-        objects_name = force_unicode(opts.verbose_name)
+        objects_name = force_text(opts.verbose_name)
     else:
-        objects_name = force_unicode(opts.verbose_name_plural)
+        objects_name = force_text(opts.verbose_name_plural)
 
     if perms_needed or protected:
         title = _("Cannot delete %(name)s") % {"name": objects_name}
@@ -69,13 +71,12 @@ def delete_selected(modeladmin, request, queryset):
         "perms_lacking": perms_needed,
         "protected": protected,
         "opts": opts,
-        "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
     }
 
     # Display the confirmation page
     return TemplateResponse(request, modeladmin.delete_selected_confirmation_template or [
-        "admin/%s/%s/delete_selected_confirmation.html" % (app_label, opts.object_name.lower()),
+        "admin/%s/%s/delete_selected_confirmation.html" % (app_label, opts.model_name),
         "admin/%s/delete_selected_confirmation.html" % app_label,
         "admin/delete_selected_confirmation.html"
     ], context, current_app=modeladmin.admin_site.name)

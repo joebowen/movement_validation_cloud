@@ -1,260 +1,216 @@
 # This file is distributed under the same license as the Django package.
 #
 # Translators:
-# Jannis Leidel <jannis@leidel.info>, 2011.
-# Shinya Okano <tokibito@gmail.com>, 2012.
+# Jannis Leidel <jannis@leidel.info>, 2011
+# Shinya Okano <tokibito@gmail.com>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: Django\n"
+"Project-Id-Version: django\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-23 02:36+0100\n"
-"PO-Revision-Date: 2012-03-08 14:16+0000\n"
+"POT-Creation-Date: 2014-05-20 12:20+0200\n"
+"PO-Revision-Date: 2014-06-28 14:23+0000\n"
 "Last-Translator: Shinya Okano <tokibito@gmail.com>\n"
-"Language-Team: Japanese (http://www.transifex.net/projects/p/django/language/"
+"Language-Team: Japanese (http://www.transifex.com/projects/p/django/language/"
 "ja/)\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: admin.py:41
+#: contrib/auth/admin.py:44
 msgid "Personal info"
 msgstr "個人情報"
 
-#: admin.py:42
+#: contrib/auth/admin.py:45
 msgid "Permissions"
 msgstr "パーミッション"
 
-#: admin.py:44
+#: contrib/auth/admin.py:47
 msgid "Important dates"
 msgstr "重要な日程"
 
-#: admin.py:125
+#: contrib/auth/admin.py:134
 msgid "Password changed successfully."
 msgstr "パスワードを変更しました"
 
-#: admin.py:135
+#: contrib/auth/admin.py:145
 #, python-format
 msgid "Change password: %s"
 msgstr "パスワードの変更: %s"
 
-#: forms.py:62
-msgid "A user with that username already exists."
-msgstr "同じユーザ名が既に登録済みです。"
+#: contrib/auth/apps.py:10
+msgid "Authentication and Authorization"
+msgstr "認証と認可"
 
-#: forms.py:63 forms.py:251 forms.py:308
+#: contrib/auth/forms.py:37 contrib/auth/tests/test_forms.py:316
+#: contrib/auth/tests/test_forms.py:321 contrib/auth/tests/test_forms.py:504
+msgid "No password set."
+msgstr "パスワードは設定されませんでした。"
+
+#: contrib/auth/forms.py:43 contrib/auth/tests/test_forms.py:326
+#: contrib/auth/tests/test_forms.py:332
+msgid "Invalid password format or unknown hashing algorithm."
+msgstr "無効なパスワードか不明なハッシュアルゴリズムです。"
+
+#: contrib/auth/forms.py:76
+msgid "A user with that username already exists."
+msgstr "同じユーザー名が既に登録済みです。"
+
+#: contrib/auth/forms.py:77 contrib/auth/forms.py:285
+#: contrib/auth/forms.py:349
 msgid "The two password fields didn't match."
 msgstr "確認用パスワードが一致しません。"
 
-#: forms.py:65 forms.py:110 forms.py:139
+#: contrib/auth/forms.py:79 contrib/auth/forms.py:129
 msgid "Username"
-msgstr "ユーザ名"
+msgstr "ユーザー名"
 
-#: forms.py:67 forms.py:111
+#: contrib/auth/forms.py:81 contrib/auth/forms.py:130
+#: contrib/auth/models.py:368
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 "この項目は必須です。半角アルファベット、半角数字、@/./+/-/_ で30文字以下にし"
 "てください。"
 
-#: forms.py:70 forms.py:114
+#: contrib/auth/forms.py:84 contrib/auth/forms.py:133
 msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
 msgstr "半角の英数字および次の記号 @/./+/-/_ 以外は使用できません。"
 
-#: forms.py:72 forms.py:116 forms.py:140 forms.py:310
+#: contrib/auth/forms.py:86 contrib/auth/forms.py:135
+#: contrib/auth/forms.py:163 contrib/auth/forms.py:351
 msgid "Password"
 msgstr "パスワード"
 
-#: forms.py:74
+#: contrib/auth/forms.py:88
 msgid "Password confirmation"
 msgstr "パスワードの確認"
 
-#: forms.py:76
+#: contrib/auth/forms.py:90
 msgid "Enter the same password as above, for verification."
 msgstr "確認のため、再度パスワードを入力してください。"
 
-#: forms.py:117
+#: contrib/auth/forms.py:136
 msgid ""
 "Raw passwords are not stored, so there is no way to see this user's "
 "password, but you can change the password using <a href=\"password/\">this "
 "form</a>."
 msgstr ""
-"生のパスワードが格納されているので、このユーザのパスワードは参照できません"
-"が、 <a href=\"password/\">このフォーム</a> を使用してパスワードを変更できま"
-"す 。"
+"生のパスワードが格納されていないので、このユーザーのパスワードは参照できませ"
+"んが、 <a href=\"password/\">このフォーム</a> を使用してパスワードを変更でき"
+"ます 。"
 
-#: forms.py:143
+#: contrib/auth/forms.py:166
+#, python-format
 msgid ""
-"Please enter a correct username and password. Note that both fields are case-"
-"sensitive."
+"Please enter a correct %(username)s and password. Note that both fields may "
+"be case-sensitive."
 msgstr ""
-"正しいユーザ名とパスワードを入力してください (大文字小文字は区別します) 。"
+"正しい%(username)sとパスワードを入力してください。どちらのフィールドも大文字"
+"と小文字は区別されます。"
 
-#: forms.py:145
-msgid ""
-"Your Web browser doesn't appear to have cookies enabled. Cookies are "
-"required for logging in."
-msgstr ""
-"お使いのブラウザはクッキーを有効にしていないようです。ログインにはクッキーが"
-"必要です。"
-
-#: forms.py:147
+#: contrib/auth/forms.py:168
 msgid "This account is inactive."
 msgstr "アカウントが無効です。"
 
-#: forms.py:191
-msgid ""
-"That e-mail address doesn't have an associated user account. Are you sure "
-"you've registered?"
-msgstr "メールアドレスの一致するユーザはいません。本当に登録しましたか？"
-
-#: forms.py:193
-msgid ""
-"The user account associated with this e-mail address cannot reset the "
-"password."
-msgstr ""
-"この電子メールアドレスに関連付けられたユーザーアカウントはパスワードをリセッ"
-"トすることはできません。"
-
-#: forms.py:196
-msgid "E-mail"
+#: contrib/auth/forms.py:231
+msgid "Email"
 msgstr "メールアドレス"
 
-#: forms.py:253
+#: contrib/auth/forms.py:287
 msgid "New password"
 msgstr "新しいパスワード"
 
-#: forms.py:255
+#: contrib/auth/forms.py:289
 msgid "New password confirmation"
 msgstr "新しいパスワード(確認用)"
 
-#: forms.py:284
+#: contrib/auth/forms.py:320
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr "元のパスワードが間違っています。もう一度入力してください。"
 
-#: forms.py:287
+#: contrib/auth/forms.py:323
 msgid "Old password"
 msgstr "元のパスワード"
 
-#: forms.py:312
+#: contrib/auth/forms.py:353
 msgid "Password (again)"
 msgstr "パスワード(確認用)"
 
-#: hashers.py:218 hashers.py:269 hashers.py:298 hashers.py:326 hashers.py:355
-#: hashers.py:389
+#: contrib/auth/hashers.py:252 contrib/auth/hashers.py:335
+#: contrib/auth/hashers.py:383 contrib/auth/hashers.py:411
+#: contrib/auth/hashers.py:444 contrib/auth/hashers.py:477
+#: contrib/auth/hashers.py:511
 msgid "algorithm"
 msgstr "アルゴリズム"
 
-#: hashers.py:219
+#: contrib/auth/hashers.py:253
 msgid "iterations"
 msgstr "イテレーション"
 
-#: hashers.py:220 hashers.py:271 hashers.py:299 hashers.py:327 hashers.py:390
+#: contrib/auth/hashers.py:254 contrib/auth/hashers.py:337
+#: contrib/auth/hashers.py:384 contrib/auth/hashers.py:412
+#: contrib/auth/hashers.py:512
 msgid "salt"
 msgstr "ソルト"
 
-#: hashers.py:221 hashers.py:300 hashers.py:328 hashers.py:356 hashers.py:391
+#: contrib/auth/hashers.py:255 contrib/auth/hashers.py:385
+#: contrib/auth/hashers.py:413 contrib/auth/hashers.py:445
+#: contrib/auth/hashers.py:478 contrib/auth/hashers.py:513
 msgid "hash"
 msgstr "ハッシュ"
 
-#: hashers.py:270
+#: contrib/auth/hashers.py:336
 msgid "work factor"
 msgstr "ワークファクター"
 
-#: hashers.py:272
+#: contrib/auth/hashers.py:338
 msgid "checksum"
 msgstr "チェックサム"
 
-#: models.py:66 models.py:113
+#: contrib/auth/models.py:63 contrib/auth/models.py:112
 msgid "name"
 msgstr "名前"
 
-#: models.py:68
+#: contrib/auth/models.py:65
 msgid "codename"
 msgstr "コード名"
 
-#: models.py:72
+#: contrib/auth/models.py:69
 msgid "permission"
 msgstr "パーミッション"
 
-#: models.py:73 models.py:115
+#: contrib/auth/models.py:70 contrib/auth/models.py:114
 msgid "permissions"
 msgstr "パーミッション"
 
-#: models.py:120
+#: contrib/auth/models.py:119
 msgid "group"
 msgstr "グループ"
 
-#: models.py:121 models.py:250
+#: contrib/auth/models.py:120 contrib/auth/models.py:293
 msgid "groups"
 msgstr "グループ"
 
-#: models.py:232
-msgid "username"
-msgstr "ユーザ名"
-
-#: models.py:233
-msgid ""
-"Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters"
-msgstr ""
-"この項目は必須です。半角アルファベット、半角数字、次の記号 @/./+/-/_ で30文字"
-"以下にしてください。"
-
-#: models.py:235
-msgid "first name"
-msgstr "名"
-
-#: models.py:236
-msgid "last name"
-msgstr "姓"
-
-#: models.py:237
-msgid "e-mail address"
-msgstr "メールアドレス"
-
-#: models.py:238
+#: contrib/auth/models.py:192
 msgid "password"
 msgstr "パスワード"
 
-#: models.py:239
-msgid "staff status"
-msgstr "スタッフ権限"
+#: contrib/auth/models.py:193
+msgid "last login"
+msgstr "最終ログイン"
 
-#: models.py:240
-msgid "Designates whether the user can log into this admin site."
-msgstr "ユーザが管理サイトにログイン可能かどうかを示します。"
-
-#: models.py:242
-msgid "active"
-msgstr "有効"
-
-#: models.py:243
-msgid ""
-"Designates whether this user should be treated as active. Unselect this "
-"instead of deleting accounts."
-msgstr ""
-"ユーザがアクティブかどうかを示します。アカウントを消す代わりに選択を解除して"
-"ください。"
-
-#: models.py:245
+#: contrib/auth/models.py:290
 msgid "superuser status"
-msgstr "スーパーユーザ権限"
+msgstr "スーパーユーザー権限"
 
-#: models.py:246
+#: contrib/auth/models.py:291
 msgid ""
 "Designates that this user has all permissions without explicitly assigning "
 "them."
 msgstr "全ての権限を持っているとみなされます。"
 
-#: models.py:248
-msgid "last login"
-msgstr "最終ログイン"
-
-#: models.py:249
-msgid "date joined"
-msgstr "登録日"
-
-#: models.py:251
+#: contrib/auth/models.py:294
 msgid ""
 "The groups this user belongs to. A user will get all permissions granted to "
 "each of his/her group."
@@ -262,27 +218,103 @@ msgstr ""
 "このユーザーが所属するグループ。ユーザーはグループのそれぞれに付与されている"
 "すべての権限を持ちます。"
 
-#: models.py:255
+#: contrib/auth/models.py:299
 msgid "user permissions"
-msgstr "ユーザパーミッション"
+msgstr "ユーザーパーミッション"
 
-#: models.py:260
-msgid "user"
-msgstr "ユーザ"
+#: contrib/auth/models.py:300
+msgid "Specific permissions for this user."
+msgstr "このユーザーの持つ権限です。"
 
-#: models.py:261
-msgid "users"
-msgstr "ユーザ"
+#: contrib/auth/models.py:367
+msgid "username"
+msgstr "ユーザー名"
 
-#: views.py:93
-msgid "Logged out"
-msgstr "ログアウト"
-
-#: management/commands/createsuperuser.py:27
-msgid "Enter a valid e-mail address."
+#: contrib/auth/models.py:371
+msgid "Enter a valid username."
 msgstr "有効なメールアドレスを入力してください。"
 
-#: templates/registration/password_reset_subject.txt:2
+#: contrib/auth/models.py:373
+msgid "first name"
+msgstr "名"
+
+#: contrib/auth/models.py:374
+msgid "last name"
+msgstr "姓"
+
+#: contrib/auth/models.py:375
+msgid "email address"
+msgstr "メールアドレス"
+
+#: contrib/auth/models.py:376
+msgid "staff status"
+msgstr "スタッフ権限"
+
+#: contrib/auth/models.py:377
+msgid "Designates whether the user can log into this admin site."
+msgstr "ユーザーが管理サイトにログイン可能かどうかを示します。"
+
+#: contrib/auth/models.py:379
+msgid "active"
+msgstr "有効"
+
+#: contrib/auth/models.py:380
+msgid ""
+"Designates whether this user should be treated as active. Unselect this "
+"instead of deleting accounts."
+msgstr ""
+"ユーザーがアクティブかどうかを示します。アカウントを消す代わりに選択を解除し"
+"てください。"
+
+#: contrib/auth/models.py:382
+msgid "date joined"
+msgstr "登録日"
+
+#: contrib/auth/models.py:390
+msgid "user"
+msgstr "ユーザー"
+
+#: contrib/auth/models.py:391
+msgid "users"
+msgstr "ユーザー"
+
+#: contrib/auth/templates/registration/password_reset_subject.txt:2
 #, python-format
 msgid "Password reset on %(site_name)s"
 msgstr "%(site_name)s のパスワードリセット"
+
+#: contrib/auth/tests/test_forms.py:387
+msgid "Enter a valid email address."
+msgstr "有効なメールアドレスを入力してください。"
+
+#: contrib/auth/views.py:92
+msgid "Logged out"
+msgstr "ログアウト"
+
+#: contrib/auth/views.py:169
+msgid "Password reset"
+msgstr "パスワードをリセット"
+
+#: contrib/auth/views.py:181
+msgid "Password reset successful"
+msgstr "パスワードをリセットしました"
+
+#: contrib/auth/views.py:216
+msgid "Enter new password"
+msgstr "新しいパスワードを入力してください"
+
+#: contrib/auth/views.py:227
+msgid "Password reset unsuccessful"
+msgstr "パスワードのリセットに失敗しました"
+
+#: contrib/auth/views.py:244
+msgid "Password reset complete"
+msgstr "パスワードがリセットされました"
+
+#: contrib/auth/views.py:278
+msgid "Password change"
+msgstr "パスワードの変更"
+
+#: contrib/auth/views.py:291
+msgid "Password change successful"
+msgstr "パスワードを変更しました"

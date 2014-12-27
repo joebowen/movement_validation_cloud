@@ -1,28 +1,25 @@
-import urllib
-from urlparse import urlparse
-
 from django.conf import settings
-from django.core.handlers.wsgi import WSGIHandler
+from django.core.handlers.wsgi import get_path_info, WSGIHandler
+from django.utils.six.moves.urllib.parse import urlparse
+from django.utils.six.moves.urllib.request import url2pathname
 
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.views import serve
+
 
 class StaticFilesHandler(WSGIHandler):
     """
     WSGI middleware that intercepts calls to the static files directory, as
     defined by the STATIC_URL setting, and serves those files.
     """
-    def __init__(self, application, base_dir=None):
+    # May be used to differentiate between handler types (e.g. in a
+    # request_finished signal)
+    handles_files = True
+
+    def __init__(self, application):
         self.application = application
-        if base_dir:
-            self.base_dir = base_dir
-        else:
-            self.base_dir = self.get_base_dir()
         self.base_url = urlparse(self.get_base_url())
         super(StaticFilesHandler, self).__init__()
-
-    def get_base_dir(self):
-        return settings.STATIC_ROOT
 
     def get_base_url(self):
         utils.check_settings()
@@ -42,7 +39,7 @@ class StaticFilesHandler(WSGIHandler):
         Returns the relative path to the media file on disk for the given URL.
         """
         relative_url = url[len(self.base_url[2]):]
-        return urllib.url2pathname(relative_url)
+        return url2pathname(relative_url)
 
     def serve(self, request):
         """
@@ -56,13 +53,13 @@ class StaticFilesHandler(WSGIHandler):
         if self._should_handle(request.path):
             try:
                 return self.serve(request)
-            except Http404, e:
+            except Http404 as e:
                 if settings.DEBUG:
                     from django.views import debug
                     return debug.technical_404_response(request, e)
         return super(StaticFilesHandler, self).get_response(request)
 
     def __call__(self, environ, start_response):
-        if not self._should_handle(environ['PATH_INFO']):
+        if not self._should_handle(get_path_info(environ)):
             return self.application(environ, start_response)
         return super(StaticFilesHandler, self).__call__(environ, start_response)

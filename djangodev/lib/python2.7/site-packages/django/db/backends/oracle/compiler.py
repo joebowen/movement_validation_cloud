@@ -1,4 +1,5 @@
 from django.db.models.sql import compiler
+from django.utils.six.moves import zip_longest
 
 
 class SQLCompiler(compiler.SQLCompiler):
@@ -10,17 +11,17 @@ class SQLCompiler(compiler.SQLCompiler):
             rn_offset = 1
         else:
             rn_offset = 0
-        index_start = rn_offset + len(self.query.extra_select.keys())
+        index_start = rn_offset + len(self.query.extra_select)
         values = [self.query.convert_values(v, None, connection=self.connection)
                   for v in row[rn_offset:index_start]]
-        for value, field in map(None, row[index_start:], fields):
+        for value, field in zip_longest(row[index_start:], fields):
             values.append(self.query.convert_values(value, field, connection=self.connection))
         return tuple(values)
 
     def as_sql(self, with_limits=True, with_col_aliases=False):
         """
         Creates the SQL for this query. Returns the SQL string and list
-        of parameters.  This is overriden from the original Query class
+        of parameters.  This is overridden from the original Query class
         to handle the additional SQL Oracle requires to emulate LIMIT
         and OFFSET.
 
@@ -55,14 +56,22 @@ class SQLCompiler(compiler.SQLCompiler):
 class SQLInsertCompiler(compiler.SQLInsertCompiler, SQLCompiler):
     pass
 
+
 class SQLDeleteCompiler(compiler.SQLDeleteCompiler, SQLCompiler):
     pass
+
 
 class SQLUpdateCompiler(compiler.SQLUpdateCompiler, SQLCompiler):
     pass
 
+
 class SQLAggregateCompiler(compiler.SQLAggregateCompiler, SQLCompiler):
     pass
 
+
 class SQLDateCompiler(compiler.SQLDateCompiler, SQLCompiler):
+    pass
+
+
+class SQLDateTimeCompiler(compiler.SQLDateTimeCompiler, SQLCompiler):
     pass

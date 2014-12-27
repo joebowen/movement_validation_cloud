@@ -1,34 +1,45 @@
 # This file is distributed under the same license as the Django package.
 #
 # Translators:
-# Jannis Leidel <jannis@leidel.info>, 2011.
+# abraham.martin <abraham.martin@gmail.com>, 2014
+# Antoni Aloy <aaloy@apsl.net>, 2013
+# Ernesto Avilés Vzqz <whippiii@gmail.com>, 2014
+# Jannis Leidel <jannis@leidel.info>, 2011
 msgid ""
 msgstr ""
-"Project-Id-Version: Django\n"
+"Project-Id-Version: django\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-23 02:43+0100\n"
-"PO-Revision-Date: 2012-02-14 13:49+0000\n"
-"Last-Translator: Jannis Leidel <jannis@leidel.info>\n"
-"Language-Team: Spanish (Castilian) (http://www.transifex.net/projects/p/"
-"django/language/es/)\n"
-"Language: es\n"
+"POT-Creation-Date: 2014-05-19 15:12+0200\n"
+"PO-Revision-Date: 2014-08-19 10:40+0000\n"
+"Last-Translator: abraham.martin <abraham.martin@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/django/language/"
+"es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: models.py:37
+#: contrib/sites/apps.py:8
+msgid "Sites"
+msgstr "Sitios"
+
+#: contrib/sites/models.py:30
+msgid "The domain name cannot contain any spaces or tabs."
+msgstr "El nombre de dominio no puede contener espacios ni tabulaciones"
+
+#: contrib/sites/models.py:67
 msgid "domain name"
 msgstr "nombre de dominio"
 
-#: models.py:38
+#: contrib/sites/models.py:69
 msgid "display name"
-msgstr "nombre para mostrar"
+msgstr "nombre a mostrar"
 
-#: models.py:43
+#: contrib/sites/models.py:74
 msgid "site"
 msgstr "sitio"
 
-#: models.py:44
+#: contrib/sites/models.py:75
 msgid "sites"
 msgstr "sitios"

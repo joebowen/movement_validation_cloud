@@ -1,6 +1,5 @@
 {% extends "admin/base_site.html" %}
 {% load i18n %}
-{% load url from future %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
@@ -10,7 +9,7 @@
 &rsaquo; {{ name }}
 </div>
 {% endblock %}
-{% block title %}View: {{ name }}{% endblock %}
+{% block title %}{% blocktrans %}View: {{ name }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
 
@@ -21,14 +20,14 @@
 {{ body }}
 
 {% if meta.Context %}
-<h3>Context:</h3>
+<h3>{% trans 'Context:' %}</h3>
 <p>{{ meta.Context }}</p>
 {% endif %}
 
 {% if meta.Templates %}
-<h3>Templates:</h3>
+<h3>{% trans 'Templates:' %}</h3>
 <p>{{ meta.Templates }}</p>
 {% endif %}
 
-<p class="small"><a href="{% url 'django-admindocs-views-index' %}">&lsaquo; Back to Views Documentation</a></p>
+<p class="small"><a href="{% url 'django-admindocs-views-index' %}">&lsaquo; {% trans 'Back to Views Documentation' %}</a></p>
 {% endblock %}

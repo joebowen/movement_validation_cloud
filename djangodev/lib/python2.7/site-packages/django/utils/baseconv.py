@@ -1,4 +1,4 @@
-# Copyright (c) 2010 Taurinus Collective. All rights reserved.
+# Copyright (c) 2010 Guilherme Gondim. All rights reserved.
 # Copyright (c) 2009 Simon Willison. All rights reserved.
 # Copyright (c) 2002 Drew Perttula. All rights reserved.
 #
@@ -43,6 +43,7 @@ BASE56_ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz'
 BASE36_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz'
 BASE62_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 BASE64_ALPHABET = BASE62_ALPHABET + '-_'
+
 
 class BaseConverter(object):
     decimal_digits = '0123456789'

@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 from datetime import datetime, tzinfo
 
 try:
@@ -9,6 +7,7 @@ except ImportError:
 
 from django.template import Node
 from django.template import TemplateSyntaxError, Library
+from django.utils import six
 from django.utils import timezone
 
 register = Library()
@@ -66,7 +65,7 @@ def do_timezone(value, arg):
     # Obtain a tzinfo instance
     if isinstance(arg, tzinfo):
         tz = arg
-    elif isinstance(arg, basestring) and pytz is not None:
+    elif isinstance(arg, six.string_types) and pytz is not None:
         try:
             tz = pytz.timezone(arg)
         except pytz.UnknownTimeZoneError:
@@ -74,11 +73,7 @@ def do_timezone(value, arg):
     else:
         return ''
 
-    # Convert and prevent further conversion
-    result = value.astimezone(tz)
-    if hasattr(tz, 'normalize'):
-        # available for pytz time zones
-        result = tz.normalize(result)
+    result = timezone.localtime(value, tz)
 
     # HACK: the convert_to_local_time flag will prevent
     #       automatic conversion of the value to local time.
@@ -195,6 +190,7 @@ def get_current_timezone_tag(parser, token):
     This will fetch the currently active time zone and put its name
     into the ``TIME_ZONE`` context variable.
     """
+    # token.split_contents() isn't useful here because this tag doesn't accept variable as arguments
     args = token.contents.split()
     if len(args) != 3 or args[1] != 'as':
         raise TemplateSyntaxError("'get_current_timezone' requires "

@@ -1,6 +1,8 @@
 from ctypes import c_void_p
-from types import NoneType
+
 from django.contrib.gis.gdal.error import GDALException
+from django.utils import six
+
 
 class GDALBase(object):
     """
@@ -18,18 +20,19 @@ class GDALBase(object):
         # Raise an exception if the pointer isn't valid don't
         # want to be passing NULL pointers to routines --
         # that's very bad.
-        if self._ptr: return self._ptr
-        else: raise GDALException('GDAL %s pointer no longer valid.' % self.__class__.__name__)
+        if self._ptr:
+            return self._ptr
+        else:
+            raise GDALException('GDAL %s pointer no longer valid.' % self.__class__.__name__)
 
     def _set_ptr(self, ptr):
         # Only allow the pointer to be set with pointers of the
         # compatible type or None (NULL).
-        if isinstance(ptr, (int, long)):
+        if isinstance(ptr, six.integer_types):
             self._ptr = self.ptr_type(ptr)
-        elif isinstance(ptr, (self.ptr_type, NoneType)):
+        elif ptr is None or isinstance(ptr, self.ptr_type):
             self._ptr = ptr
         else:
             raise TypeError('Incompatible pointer type')
 
     ptr = property(_get_ptr, _set_ptr)
-

@@ -1,281 +1,321 @@
 # This file is distributed under the same license as the Django package.
 #
 # Translators:
-# Ali Nikneshan <ali@nikneshan.com>, 2011.
-# Jannis Leidel <jannis@leidel.info>, 2011.
+# Eric Hamiter <ehamiter@gmail.com>, 2013
+# Jannis Leidel <jannis@leidel.info>, 2011
+# Reza Mohammadi <reza@teeleh.ir>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: Django\n"
+"Project-Id-Version: django\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-23 02:36+0100\n"
-"PO-Revision-Date: 2012-03-08 12:07+0000\n"
-"Last-Translator: Ali Nikneshan <ali@nikneshan.com>\n"
-"Language-Team: Persian (http://www.transifex.net/projects/p/django/language/"
+"POT-Creation-Date: 2014-05-20 12:20+0200\n"
+"PO-Revision-Date: 2014-08-17 09:39+0000\n"
+"Last-Translator: Reza Mohammadi <reza@teeleh.ir>\n"
+"Language-Team: Persian (http://www.transifex.com/projects/p/django/language/"
 "fa/)\n"
-"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Language: fa\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: admin.py:41
+#: contrib/auth/admin.py:44
 msgid "Personal info"
 msgstr "اطلاعات شخصی"
 
-#: admin.py:42
+#: contrib/auth/admin.py:45
 msgid "Permissions"
 msgstr "اجازه‌ها"
 
-#: admin.py:44
+#: contrib/auth/admin.py:47
 msgid "Important dates"
 msgstr "تاریخ‌های مهم"
 
-#: admin.py:125
+#: contrib/auth/admin.py:134
 msgid "Password changed successfully."
 msgstr "گذرواژه با موفقیت تغییر یافت."
 
-#: admin.py:135
+#: contrib/auth/admin.py:145
 #, python-format
 msgid "Change password: %s"
 msgstr "تغییر گذرواژه: %s"
 
-#: forms.py:62
-msgid "A user with that username already exists."
-msgstr "کاربری با این نام کاربری وجود دارد."
+#: contrib/auth/apps.py:10
+msgid "Authentication and Authorization"
+msgstr "بررسی اصالت و اجازه‌ها"
 
-#: forms.py:63 forms.py:251 forms.py:308
+#: contrib/auth/forms.py:37 contrib/auth/tests/test_forms.py:316
+#: contrib/auth/tests/test_forms.py:321 contrib/auth/tests/test_forms.py:504
+msgid "No password set."
+msgstr "هیچ رمزی انتخاب نشده است."
+
+#: contrib/auth/forms.py:43 contrib/auth/tests/test_forms.py:326
+#: contrib/auth/tests/test_forms.py:332
+msgid "Invalid password format or unknown hashing algorithm."
+msgstr "رمز نامعتبر یا الگوریتم رمزنگاری ناشناس"
+
+#: contrib/auth/forms.py:76
+msgid "A user with that username already exists."
+msgstr "کاربری با آن نام کاربری وجود دارد."
+
+#: contrib/auth/forms.py:77 contrib/auth/forms.py:285
+#: contrib/auth/forms.py:349
 msgid "The two password fields didn't match."
 msgstr "دو فیلد گذرواژه با هم مطابقت ندارند."
 
-#: forms.py:65 forms.py:110 forms.py:139
+#: contrib/auth/forms.py:79 contrib/auth/forms.py:129
 msgid "Username"
 msgstr "نام کاربری"
 
-#: forms.py:67 forms.py:111
+#: contrib/auth/forms.py:81 contrib/auth/forms.py:130
+#: contrib/auth/models.py:368
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr ""
-"الزامی. ۳۰ حرف یا کمتر. فقط حروف الفبا (ارقام، الفبا و علائم @/./+/-/_)."
+msgstr "الزامی. ۳۰ کاراکتر یا کمتر. فقط حروف الفبا، ارقام و @/./+/-/_."
 
-#: forms.py:70 forms.py:114
+#: contrib/auth/forms.py:84 contrib/auth/forms.py:133
 msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
-msgstr "این مقدار فقط باید حاوی حروف، اعداد و یا علائم @/./+/-/_ باشد."
+msgstr "این مقدار فقط باید حاوی حروف، اعداد و یا کاراکترهای @/./+/-/_ باشد."
 
-#: forms.py:72 forms.py:116 forms.py:140 forms.py:310
+#: contrib/auth/forms.py:86 contrib/auth/forms.py:135
+#: contrib/auth/forms.py:163 contrib/auth/forms.py:351
 msgid "Password"
 msgstr "گذرواژه"
 
-#: forms.py:74
+#: contrib/auth/forms.py:88
 msgid "Password confirmation"
-msgstr "تصدیق گذرواژه"
+msgstr "تأیید گذرواژه"
 
-#: forms.py:76
+#: contrib/auth/forms.py:90
 msgid "Enter the same password as above, for verification."
 msgstr "همان گذرواژهٔ بالایی را برای اطمینان دوباره وارد کنید."
 
-#: forms.py:117
+#: contrib/auth/forms.py:136
 msgid ""
 "Raw passwords are not stored, so there is no way to see this user's "
 "password, but you can change the password using <a href=\"password/\">this "
 "form</a>."
 msgstr ""
+"گذرواژه‌های خام نگهداری نمی‌شوند، لذا روشی برای مشاهدهٔ گذرواژهٔ این کاربر وجود "
+"ندارد. ولی شما می‌توانید این گذرواژه را از طریق <a href=\"password/\">این "
+"فرم</a> تغییر دهید."
 
-#: forms.py:143
+#: contrib/auth/forms.py:166
+#, python-format
 msgid ""
-"Please enter a correct username and password. Note that both fields are case-"
-"sensitive."
+"Please enter a correct %(username)s and password. Note that both fields may "
+"be case-sensitive."
 msgstr ""
-"لطفاً نام کاربری و گذرواژه صحیح را وارد کنید. توجه کنید که هر دو مقدار به "
-"حروف کوچک و بزرگ (انگلیسی) حساس هستند."
+"لطفا %(username)s و گذرواژه‌ای قابل قبول وارد کنید.\n"
+"توجه داشته باشید که ممکن است هر دو به کوچکی و بزرگی حروف حساس باشند."
 
-#: forms.py:145
-msgid ""
-"Your Web browser doesn't appear to have cookies enabled. Cookies are "
-"required for logging in."
-msgstr ""
-"به نطر می رسد مرورگر شما کوکی‌ها را قبول نمی‌کند. کوکی‌ها برای ورود به وبگاه "
-"لازم هستند."
-
-#: forms.py:147
+#: contrib/auth/forms.py:168
 msgid "This account is inactive."
-msgstr "این حساب غیرفعال است."
+msgstr "این حساب غیر فعال است."
 
-#: forms.py:191
-msgid ""
-"That e-mail address doesn't have an associated user account. Are you sure "
-"you've registered?"
-msgstr "این پست الکترونیکی در سیستم حساب ندارد. آیا مطمئن هستید که عضو شده‌اید؟"
+#: contrib/auth/forms.py:231
+msgid "Email"
+msgstr "ایمیل"
 
-#: forms.py:193
-msgid ""
-"The user account associated with this e-mail address cannot reset the "
-"password."
-msgstr ""
-
-#: forms.py:196
-msgid "E-mail"
-msgstr "پست الکترونیکی"
-
-#: forms.py:253
+#: contrib/auth/forms.py:287
 msgid "New password"
 msgstr "گذرواژهٔ جدید"
 
-#: forms.py:255
+#: contrib/auth/forms.py:289
 msgid "New password confirmation"
-msgstr "تصدیق گذرواژهٔ جدید"
+msgstr "تأیید گذرواژهٔ جدید"
 
-#: forms.py:284
+#: contrib/auth/forms.py:320
 msgid "Your old password was entered incorrectly. Please enter it again."
-msgstr "گذرواژهٔ قدیمی شما اشتباه بود. لطفاً دوباره وارد کنید."
+msgstr "گذرواژهٔ قدیمی‌تان اشتباه وارد شد. لطفاً دوباره وارد کنید."
 
-#: forms.py:287
+#: contrib/auth/forms.py:323
 msgid "Old password"
 msgstr "گذرواژهٔ قدیمی"
 
-#: forms.py:312
+#: contrib/auth/forms.py:353
 msgid "Password (again)"
 msgstr "گذرواژه (تکرار)"
 
-#: hashers.py:218 hashers.py:269 hashers.py:298 hashers.py:326 hashers.py:355
-#: hashers.py:389
+#: contrib/auth/hashers.py:252 contrib/auth/hashers.py:335
+#: contrib/auth/hashers.py:383 contrib/auth/hashers.py:411
+#: contrib/auth/hashers.py:444 contrib/auth/hashers.py:477
+#: contrib/auth/hashers.py:511
 msgid "algorithm"
-msgstr ""
+msgstr "الگوریتم"
 
-#: hashers.py:219
+#: contrib/auth/hashers.py:253
 msgid "iterations"
-msgstr ""
+msgstr "تکرار"
 
-#: hashers.py:220 hashers.py:271 hashers.py:299 hashers.py:327 hashers.py:390
+#: contrib/auth/hashers.py:254 contrib/auth/hashers.py:337
+#: contrib/auth/hashers.py:384 contrib/auth/hashers.py:412
+#: contrib/auth/hashers.py:512
 msgid "salt"
-msgstr ""
+msgstr "salt"
 
-#: hashers.py:221 hashers.py:300 hashers.py:328 hashers.py:356 hashers.py:391
+#: contrib/auth/hashers.py:255 contrib/auth/hashers.py:385
+#: contrib/auth/hashers.py:413 contrib/auth/hashers.py:445
+#: contrib/auth/hashers.py:478 contrib/auth/hashers.py:513
 msgid "hash"
-msgstr ""
+msgstr "hash"
 
-#: hashers.py:270
+#: contrib/auth/hashers.py:336
 msgid "work factor"
-msgstr ""
+msgstr "عامل کار"
 
-#: hashers.py:272
+#: contrib/auth/hashers.py:338
 msgid "checksum"
-msgstr ""
+msgstr "جمع کنترلی"
 
-#: models.py:66 models.py:113
+#: contrib/auth/models.py:63 contrib/auth/models.py:112
 msgid "name"
 msgstr "نام"
 
-#: models.py:68
+#: contrib/auth/models.py:65
 msgid "codename"
 msgstr "نام کد"
 
-#: models.py:72
+#: contrib/auth/models.py:69
 msgid "permission"
 msgstr "اجازه"
 
-#: models.py:73 models.py:115
+#: contrib/auth/models.py:70 contrib/auth/models.py:114
 msgid "permissions"
 msgstr "اجازه‌ها"
 
-#: models.py:120
+#: contrib/auth/models.py:119
 msgid "group"
 msgstr "گروه"
 
-#: models.py:121 models.py:250
+#: contrib/auth/models.py:120 contrib/auth/models.py:293
 msgid "groups"
 msgstr "گروه‌ها"
 
-#: models.py:232
-msgid "username"
-msgstr "نام کاربری"
-
-#: models.py:233
-msgid ""
-"Required. 30 characters or fewer. Letters, numbers and @/./+/-/_ characters"
-msgstr ""
-"الزامی. 30 حرف یا کمتر. فقط حروف الفبا (ارقام، الفبا و علائم @/./+/-/_ )."
-
-#: models.py:235
-msgid "first name"
-msgstr "نام"
-
-#: models.py:236
-msgid "last name"
-msgstr "نام خانوادگی"
-
-#: models.py:237
-msgid "e-mail address"
-msgstr "نشانی پست الکترونیکی"
-
-#: models.py:238
+#: contrib/auth/models.py:192
 msgid "password"
 msgstr "گذرواژه"
 
-#: models.py:239
-msgid "staff status"
-msgstr "وضعیت کارمندی"
+#: contrib/auth/models.py:193
+msgid "last login"
+msgstr "آخرین ورود"
 
-#: models.py:240
-msgid "Designates whether the user can log into this admin site."
-msgstr "تعبیه شده برای اینکه در وبگاه مدیریت، کاربر بتواند یا نتواند وارد شود."
-
-#: models.py:242
-msgid "active"
-msgstr "فعال"
-
-#: models.py:243
-msgid ""
-"Designates whether this user should be treated as active. Unselect this "
-"instead of deleting accounts."
-msgstr ""
-"برای نشان دادن اینکه آیا باید با این کاربر به عنوان کاربر فعال رفتار کرد "
-"تعبیه شده است. به جای حذف کاربر تیک را بردارید."
-
-#: models.py:245
+#: contrib/auth/models.py:290
 msgid "superuser status"
 msgstr "ابرکاربر"
 
-#: models.py:246
+#: contrib/auth/models.py:291
 msgid ""
 "Designates that this user has all permissions without explicitly assigning "
 "them."
 msgstr ""
-"نشان می‌دهد که آیا این کاربر دسترسی نامحدود به کلیهٔ بخشهای وبگاه مدیریت دارد."
+"نشان می‌دهد که این کاربر همهٔ اجازه‌ها را دارد بدون آنکه به صراحت به او اختصاص "
+"داده شده باشد."
 
-#: models.py:248
-msgid "last login"
-msgstr "آخرین ورود"
-
-#: models.py:249
-msgid "date joined"
-msgstr "تاریخ پیوستن"
-
-#: models.py:251
+#: contrib/auth/models.py:294
 msgid ""
 "The groups this user belongs to. A user will get all permissions granted to "
 "each of his/her group."
 msgstr ""
+"گروه‌هایی که این کاربر به آن‌ها تعلق دارد. کاربر اجازه‌هایی که به هر یک از "
+"گروه‌هایش داده شده است را بدست می‌آورد."
 
-#: models.py:255
+#: contrib/auth/models.py:299
 msgid "user permissions"
 msgstr "اجازه‌های کاربر"
 
-#: models.py:260
+#: contrib/auth/models.py:300
+msgid "Specific permissions for this user."
+msgstr "اجازه‌های خاص این کاربر."
+
+#: contrib/auth/models.py:367
+msgid "username"
+msgstr "نام کاربری"
+
+#: contrib/auth/models.py:371
+msgid "Enter a valid username."
+msgstr "یک نام کاربری معتبر وارد کنید"
+
+#: contrib/auth/models.py:373
+msgid "first name"
+msgstr "نام"
+
+#: contrib/auth/models.py:374
+msgid "last name"
+msgstr "نام خانوادگی"
+
+#: contrib/auth/models.py:375
+msgid "email address"
+msgstr "آدرس ایمیل"
+
+#: contrib/auth/models.py:376
+msgid "staff status"
+msgstr "وضعیت کارمندی"
+
+#: contrib/auth/models.py:377
+msgid "Designates whether the user can log into this admin site."
+msgstr "نشان می‌دهد که آیا این کاربر می‌تواند وارد این وبگاه مدیریت شود یا خیر."
+
+#: contrib/auth/models.py:379
+msgid "active"
+msgstr "فعال"
+
+#: contrib/auth/models.py:380
+msgid ""
+"Designates whether this user should be treated as active. Unselect this "
+"instead of deleting accounts."
+msgstr ""
+"نشان می‌دهد که آیا این کاربر اجازهٔ فعالیت دارد یا خیر. به جای حذف کاربر این "
+"تیک را بردارید."
+
+#: contrib/auth/models.py:382
+msgid "date joined"
+msgstr "تاریخ پیوستن"
+
+#: contrib/auth/models.py:390
 msgid "user"
 msgstr "کاربر"
 
-#: models.py:261
+#: contrib/auth/models.py:391
 msgid "users"
 msgstr "کاربرها"
 
-#: views.py:93
+#: contrib/auth/templates/registration/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset on %(site_name)s"
+msgstr "بازیابی گذرواژه در %(site_name)s"
+
+#: contrib/auth/tests/test_forms.py:387
+msgid "Enter a valid email address."
+msgstr "یک آدرس ایمیل معتبر وارد کنید."
+
+#: contrib/auth/views.py:92
 msgid "Logged out"
 msgstr "خارج شدید"
 
-#: management/commands/createsuperuser.py:27
-msgid "Enter a valid e-mail address."
-msgstr "یک نشانی پست الکترونیکی معتبر وارد کنید."
+#: contrib/auth/views.py:169
+msgid "Password reset"
+msgstr "ایجاد گذرواژهٔ جدید"
 
-#: templates/registration/password_reset_subject.txt:2
-#, python-format
-msgid "Password reset on %(site_name)s"
-msgstr ""
+#: contrib/auth/views.py:181
+msgid "Password reset successful"
+msgstr "گذرواژهٔ جدید ایجاد شد."
+
+#: contrib/auth/views.py:216
+msgid "Enter new password"
+msgstr "ورود گذرواژهٔ جدید"
+
+#: contrib/auth/views.py:227
+msgid "Password reset unsuccessful"
+msgstr "گذرواژهٔ جدید ایجاد نشد."
+
+#: contrib/auth/views.py:244
+msgid "Password reset complete"
+msgstr "گذرواژهٔ جدید ایجاد شد"
+
+#: contrib/auth/views.py:278
+msgid "Password change"
+msgstr "تغییر گذرواژه"
+
+#: contrib/auth/views.py:291
+msgid "Password change successful"
+msgstr "گذرواژه تغییر یافت."

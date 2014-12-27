@@ -7,6 +7,7 @@ from django.template.base import TemplateDoesNotExist
 from django.template.loader import BaseLoader
 from django.utils._os import safe_join
 
+
 class Loader(BaseLoader):
     is_usable = True
 
@@ -34,11 +35,8 @@ class Loader(BaseLoader):
         tried = []
         for filepath in self.get_template_sources(template_name, template_dirs):
             try:
-                file = open(filepath)
-                try:
-                    return (file.read().decode(settings.FILE_CHARSET), filepath)
-                finally:
-                    file.close()
+                with open(filepath, 'rb') as fp:
+                    return (fp.read().decode(settings.FILE_CHARSET), filepath)
             except IOError:
                 tried.append(filepath)
         if tried:
@@ -47,5 +45,3 @@ class Loader(BaseLoader):
             error_msg = "Your TEMPLATE_DIRS setting is empty. Change it to point to at least one template directory."
         raise TemplateDoesNotExist(error_msg)
     load_template_source.is_usable = True
-
-_loader = Loader()

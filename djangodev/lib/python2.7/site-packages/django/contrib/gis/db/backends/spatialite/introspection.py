@@ -1,5 +1,7 @@
 from django.contrib.gis.gdal import OGRGeomType
 from django.db.backends.sqlite3.introspection import DatabaseIntrospection, FlexibleFieldLookupDict
+from django.utils import six
+
 
 class GeoFlexibleFieldLookupDict(FlexibleFieldLookupDict):
     """
@@ -8,14 +10,15 @@ class GeoFlexibleFieldLookupDict(FlexibleFieldLookupDict):
     """
     base_data_types_reverse = FlexibleFieldLookupDict.base_data_types_reverse.copy()
     base_data_types_reverse.update(
-        {'point' : 'GeometryField',
-         'linestring' : 'GeometryField',
-         'polygon' : 'GeometryField',
-         'multipoint' : 'GeometryField',
-         'multilinestring' : 'GeometryField',
-         'multipolygon' : 'GeometryField',
-         'geometrycollection' : 'GeometryField',
+        {'point': 'GeometryField',
+         'linestring': 'GeometryField',
+         'polygon': 'GeometryField',
+         'multipoint': 'GeometryField',
+         'multilinestring': 'GeometryField',
+         'multipolygon': 'GeometryField',
+         'geometrycollection': 'GeometryField',
          })
+
 
 class SpatiaLiteIntrospection(DatabaseIntrospection):
     data_types_reverse = GeoFlexibleFieldLookupDict()
@@ -24,9 +27,10 @@ class SpatiaLiteIntrospection(DatabaseIntrospection):
         cursor = self.connection.cursor()
         try:
             # Querying the `geometry_columns` table to get additional metadata.
-            cursor.execute('SELECT "coord_dimension", "srid", "type" '
-                           'FROM "geometry_columns" '
-                           'WHERE "f_table_name"=%s AND "f_geometry_column"=%s',
+            type_col = 'type' if self.connection.ops.spatial_version < (4, 0, 0) else 'geometry_type'
+            cursor.execute('SELECT coord_dimension, srid, %s '
+                           'FROM geometry_columns '
+                           'WHERE f_table_name=%%s AND f_geometry_column=%%s' % type_col,
                            (table_name, geo_col))
             row = cursor.fetchone()
             if not row:
@@ -43,9 +47,18 @@ class SpatiaLiteIntrospection(DatabaseIntrospection):
             field_params = {}
             if srid != 4326:
                 field_params['srid'] = srid
-            if isinstance(dim, basestring) and 'Z' in dim:
+            if isinstance(dim, six.string_types) and 'Z' in dim:
                 field_params['dim'] = 3
         finally:
             cursor.close()
 
         return field_type, field_params
+
+    def get_indexes(self, cursor, table_name):
+        indexes = super(SpatiaLiteIntrospection, self).get_indexes(cursor, table_name)
+        cursor.execute('SELECT f_geometry_column '
+                       'FROM geometry_columns '
+                       'WHERE f_table_name=%s AND spatial_index_enabled=1', (table_name,))
+        for row in cursor.fetchall():
+            indexes[row[0]] = {'primary_key': False, 'unique': False}
+        return indexes

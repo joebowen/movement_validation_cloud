@@ -2,16 +2,19 @@
 # Copyright 2007 Google Inc. http://code.google.com/p/ipaddr-py/
 # Licensed under the Apache License, Version 2.0 (the "License").
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+from django.utils.six.moves import xrange
+
 
 def clean_ipv6_address(ip_str, unpack_ipv4=False,
-        error_message="This is not a valid IPv6 address"):
+        error_message=_("This is not a valid IPv6 address.")):
     """
-    Cleans a IPv6 address string.
+    Cleans an IPv6 address string.
 
     Validity is checked by calling is_valid_ipv6_address() - if an
     invalid address is passed, ValidationError is raised.
 
-    Replaces the longest continious zero-sequence with "::" and
+    Replaces the longest continuous zero-sequence with "::" and
     removes leading zeroes and makes sure all hextets are lowercase.
 
     Args:
@@ -30,7 +33,7 @@ def clean_ipv6_address(ip_str, unpack_ipv4=False,
     doublecolon_len = 0
 
     if not is_valid_ipv6_address(ip_str):
-        raise ValidationError(error_message)
+        raise ValidationError(error_message, code='invalid')
 
     # This algorithm can only handle fully exploded
     # IP strings
@@ -87,7 +90,7 @@ def clean_ipv6_address(ip_str, unpack_ipv4=False,
 
 def _sanitize_ipv4_mapping(ip_str):
     """
-    Sanitize IPv4 mapping in a expanded IPv6 address.
+    Sanitize IPv4 mapping in an expanded IPv6 address.
 
     This converts ::ffff:0a0a:0a0a to ::ffff:10.10.10.10.
     If there is nothing to sanitize, returns an unchanged
@@ -121,6 +124,7 @@ def _sanitize_ipv4_mapping(ip_str):
 
     return result
 
+
 def _unpack_ipv4(ip_str):
     """
     Unpack an IPv4 address that was mapped in a compressed IPv6 address.
@@ -137,8 +141,8 @@ def _unpack_ipv4(ip_str):
     if not ip_str.lower().startswith('0000:0000:0000:0000:0000:ffff:'):
         return None
 
-    hextets = ip_str.split(':')
-    return hextets[-1]
+    return ip_str.rsplit(':', 1)[1]
+
 
 def is_valid_ipv6_address(ip_str):
     """
@@ -235,7 +239,7 @@ def _explode_shorthand_ip_string(ip_str):
         sep = len(hextet[0].split(':')) + len(hextet[1].split(':'))
         new_ip = hextet[0].split(':')
 
-        for _ in xrange(fill_to - sep):
+        for __ in xrange(fill_to - sep):
             new_ip.append('0000')
         new_ip += hextet[1].split(':')
 
@@ -262,6 +266,6 @@ def _is_shorthand_ip(ip_str):
     """
     if ip_str.count('::') == 1:
         return True
-    if filter(lambda x: len(x) < 4, ip_str.split(':')):
+    if any(len(x) < 4 for x in ip_str.split(':')):
         return True
     return False

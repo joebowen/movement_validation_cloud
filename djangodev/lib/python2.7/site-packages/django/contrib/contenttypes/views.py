@@ -1,8 +1,12 @@
+from __future__ import unicode_literals
+
 from django import http
+from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site, get_current_site
+from django.contrib.sites.requests import RequestSite
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
+
 
 def shortcut(request, content_type_id, object_id):
     """
@@ -12,11 +16,11 @@ def shortcut(request, content_type_id, object_id):
     try:
         content_type = ContentType.objects.get(pk=content_type_id)
         if not content_type.model_class():
-            raise http.Http404(_(u"Content type %(ct_id)s object has no associated model") %
+            raise http.Http404(_("Content type %(ct_id)s object has no associated model") %
                                {'ct_id': content_type_id})
         obj = content_type.get_object_for_this_type(pk=object_id)
     except (ObjectDoesNotExist, ValueError):
-        raise http.Http404(_(u"Content type %(ct_id)s object %(obj_id)s doesn't exist") %
+        raise http.Http404(_("Content type %(ct_id)s object %(obj_id)s doesn't exist") %
                            {'ct_id': content_type_id, 'obj_id': object_id})
 
     try:
@@ -30,14 +34,16 @@ def shortcut(request, content_type_id, object_id):
     # if necessary.
 
     # If the object actually defines a domain, we're done.
-    if absurl.startswith('http://') or absurl.startswith('https://'):
+    if absurl.startswith(('http://', 'https://', '//')):
         return http.HttpResponseRedirect(absurl)
 
     # Otherwise, we need to introspect the object's relationships for a
     # relation to the Site object
     object_domain = None
 
-    if Site._meta.installed:
+    if apps.is_installed('django.contrib.sites'):
+        Site = apps.get_model('sites.Site')
+
         opts = obj._meta
 
         # First, look for an many-to-many relationship to Site.
@@ -63,17 +69,21 @@ def shortcut(request, content_type_id, object_id):
                     if object_domain is not None:
                         break
 
-    # Fall back to the current site (if possible).
-    if object_domain is None:
-        try:
-            object_domain = get_current_site(request).domain
-        except Site.DoesNotExist:
-            pass
+        # Fall back to the current site (if possible).
+        if object_domain is None:
+            try:
+                object_domain = Site.objects.get_current().domain
+            except Site.DoesNotExist:
+                pass
+
+    else:
+        # Fall back to the current request's site.
+        object_domain = RequestSite(request).domain
 
     # If all that malarkey found an object domain, use it. Otherwise, fall back
     # to whatever get_absolute_url() returned.
     if object_domain is not None:
-        protocol = request.is_secure() and 'https' or 'http'
+        protocol = request.scheme
         return http.HttpResponseRedirect('%s://%s%s'
                                          % (protocol, object_domain, absurl))
     else:

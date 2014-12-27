@@ -1,12 +1,15 @@
+from __future__ import unicode_literals
+
 from django.conf import settings
-from django.utils.encoding import force_unicode, StrAndUnicode
+from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.contrib.messages import constants, utils
 
 
 LEVEL_TAGS = utils.get_level_tags()
 
 
-class Message(StrAndUnicode):
+@python_2_unicode_compatible
+class Message(object):
     """
     Represents an actual message that can be stored in any of the supported
     storage classes (typically session- or cookie-based) and rendered in a view
@@ -24,30 +27,32 @@ class Message(StrAndUnicode):
         and ``extra_tags`` to unicode in case they are lazy translations.
 
         Known "safe" types (None, int, etc.) are not converted (see Django's
-        ``force_unicode`` implementation for details).
+        ``force_text`` implementation for details).
         """
-        self.message = force_unicode(self.message, strings_only=True)
-        self.extra_tags = force_unicode(self.extra_tags, strings_only=True)
+        self.message = force_text(self.message, strings_only=True)
+        self.extra_tags = force_text(self.extra_tags, strings_only=True)
 
     def __eq__(self, other):
         return isinstance(other, Message) and self.level == other.level and \
-                                              self.message == other.message
+            self.message == other.message
 
-    def __unicode__(self):
-        return force_unicode(self.message)
+    def __str__(self):
+        return force_text(self.message)
 
     def _get_tags(self):
-        label_tag = force_unicode(LEVEL_TAGS.get(self.level, ''),
-                                  strings_only=True)
-        extra_tags = force_unicode(self.extra_tags, strings_only=True)
-        if extra_tags and label_tag:
-            return u' '.join([extra_tags, label_tag])
+        extra_tags = force_text(self.extra_tags, strings_only=True)
+        if extra_tags and self.level_tag:
+            return ' '.join([extra_tags, self.level_tag])
         elif extra_tags:
             return extra_tags
-        elif label_tag:
-            return label_tag
+        elif self.level_tag:
+            return self.level_tag
         return ''
     tags = property(_get_tags)
+
+    @property
+    def level_tag(self):
+        return force_text(LEVEL_TAGS.get(self.level, ''), strings_only=True)
 
 
 class BaseStorage(object):
@@ -102,7 +107,7 @@ class BaseStorage(object):
         just containing no messages) then ``None`` should be returned in
         place of ``messages``.
         """
-        raise NotImplementedError()
+        raise NotImplementedError('subclasses of BaseStorage must provide a _get() method')
 
     def _store(self, messages, response, *args, **kwargs):
         """
@@ -113,7 +118,7 @@ class BaseStorage(object):
 
         **This method must be implemented by a subclass.**
         """
-        raise NotImplementedError()
+        raise NotImplementedError('subclasses of BaseStorage must provide a _store() method')
 
     def _prepare_messages(self, messages):
         """

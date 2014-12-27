@@ -1,4 +1,3 @@
-from __future__ import with_statement
 import cgi
 import errno
 import mimetypes
@@ -9,7 +8,6 @@ import shutil
 import stat
 import sys
 import tempfile
-import urllib
 
 from optparse import make_option
 from os import path
@@ -17,10 +15,10 @@ from os import path
 import django
 from django.template import Template, Context
 from django.utils import archive
-from django.utils.encoding import smart_str
+from django.utils.six.moves.urllib.request import urlretrieve
 from django.utils._os import rmtree_errorhandler
 from django.core.management.base import BaseCommand, CommandError
-from django.core.management.commands.makemessages import handle_extensions
+from django.core.management.utils import handle_extensions
 
 
 _drive_re = re.compile('^([a-z]):', re.I)
@@ -42,7 +40,7 @@ class TemplateCommand(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--template',
                     action='store', dest='template',
-                    help='The dotted import path to load the template from.'),
+                    help='The path or URL to load the template from.'),
         make_option('--extension', '-e', dest='extensions',
                     action='append', default=['py'],
                     help='The file extension(s) to render (default: "py"). '
@@ -53,36 +51,30 @@ class TemplateCommand(BaseCommand):
                     help='The file name(s) to render. '
                          'Separate multiple extensions with commas, or use '
                          '-n multiple times.')
-        )
-    requires_model_validation = False
+    )
+    requires_system_checks = False
     # Can't import settings during this command, because they haven't
     # necessarily been created.
     can_import_settings = False
     # The supported URL schemes
     url_schemes = ['http', 'https', 'ftp']
+    # Can't perform any active locale changes during this command, because
+    # setting might not be available at all.
+    leave_locale_alone = True
 
     def handle(self, app_or_project, name, target=None, **options):
         self.app_or_project = app_or_project
         self.paths_to_remove = []
         self.verbosity = int(options.get('verbosity'))
 
-        # If it's not a valid directory name.
-        if not re.search(r'^[_a-zA-Z]\w*$', name):
-            # Provide a smart error message, depending on the error.
-            if not re.search(r'^[_a-zA-Z]', name):
-                message = ('make sure the name begins '
-                           'with a letter or underscore')
-            else:
-                message = 'use only numbers, letters and underscores'
-            raise CommandError("%r is not a valid %s name. Please %s." %
-                               (name, app_or_project, message))
+        self.validate_name(name, app_or_project)
 
         # if some directory is given, make sure it's nicely expanded
         if target is None:
             top_dir = path.join(os.getcwd(), name)
             try:
                 os.makedirs(top_dir)
-            except OSError, e:
+            except OSError as e:
                 if e.errno == errno.EEXIST:
                     message = "'%s' already exists" % top_dir
                 else:
@@ -110,11 +102,16 @@ class TemplateCommand(BaseCommand):
         base_name = '%s_name' % app_or_project
         base_subdir = '%s_template' % app_or_project
         base_directory = '%s_directory' % app_or_project
+        if django.VERSION[-2] != 'final':
+            docs_version = 'dev'
+        else:
+            docs_version = '%d.%d' % django.VERSION[:2]
 
         context = Context(dict(options, **{
             base_name: name,
             base_directory: top_dir,
-        }))
+            'docs_version': docs_version,
+        }), autoescape=False)
 
         # Setup a stub settings environment for template rendering
         from django.conf import settings
@@ -135,7 +132,7 @@ class TemplateCommand(BaseCommand):
                     os.mkdir(target_dir)
 
             for dirname in dirs[:]:
-                if dirname.startswith('.'):
+                if dirname.startswith('.') or dirname == '__pycache__':
                     dirs.remove(dirname)
 
             for filename in files:
@@ -153,12 +150,14 @@ class TemplateCommand(BaseCommand):
 
                 # Only render the Python files, as we don't want to
                 # accidentally render Django templates files
-                with open(old_path, 'r') as template_file:
+                with open(old_path, 'rb') as template_file:
                     content = template_file.read()
                 if filename.endswith(extensions) or filename in extra_files:
+                    content = content.decode('utf-8')
                     template = Template(content)
                     content = template.render(context)
-                with open(new_path, 'w') as new_file:
+                    content = content.encode('utf-8')
+                with open(new_path, 'wb') as new_file:
                     new_file.write(content)
 
                 if self.verbosity >= 2:
@@ -167,11 +166,10 @@ class TemplateCommand(BaseCommand):
                     shutil.copymode(old_path, new_path)
                     self.make_writeable(new_path)
                 except OSError:
-                    notice = self.style.NOTICE(
+                    self.stderr.write(
                         "Notice: Couldn't set permission bits on %s. You're "
                         "probably using an uncommon filesystem setup. No "
-                        "problem.\n" % new_path)
-                    sys.stderr.write(smart_str(notice))
+                        "problem." % new_path, self.style.NOTICE)
 
         if self.paths_to_remove:
             if self.verbosity >= 2:
@@ -209,6 +207,20 @@ class TemplateCommand(BaseCommand):
         raise CommandError("couldn't handle %s template %s." %
                            (self.app_or_project, template))
 
+    def validate_name(self, name, app_or_project):
+        if name is None:
+            raise CommandError("you must provide %s %s name" % (
+                "an" if app_or_project == "app" else "a", app_or_project))
+        # If it's not a valid directory name.
+        if not re.search(r'^[_a-zA-Z]\w*$', name):
+            # Provide a smart error message, depending on the error.
+            if not re.search(r'^[_a-zA-Z]', name):
+                message = 'make sure the name begins with a letter or underscore'
+            else:
+                message = 'use only numbers, letters and underscores'
+            raise CommandError("%r is not a valid %s name. Please %s." %
+                               (name, app_or_project, message))
+
     def download(self, url):
         """
         Downloads the given URL and returns the file name.
@@ -217,7 +229,7 @@ class TemplateCommand(BaseCommand):
             tmp = url.rstrip('/')
             filename = tmp.split('/')[-1]
             if url.endswith('/'):
-                display_url  = tmp + '/'
+                display_url = tmp + '/'
             else:
                 display_url = url
             return filename, display_url
@@ -230,9 +242,8 @@ class TemplateCommand(BaseCommand):
         if self.verbosity >= 2:
             self.stdout.write("Downloading %s\n" % display_url)
         try:
-            the_path, info = urllib.urlretrieve(url,
-                                                path.join(tempdir, filename))
-        except IOError, e:
+            the_path, info = urlretrieve(url, path.join(tempdir, filename))
+        except IOError as e:
             raise CommandError("couldn't download URL %s to %s: %s" %
                                (url, filename, e))
 
@@ -255,7 +266,7 @@ class TemplateCommand(BaseCommand):
                 guessed_filename += ext
 
         # Move the temporary file to a filename that has better
-        # chances of being recognnized by the archive utils
+        # chances of being recognized by the archive utils
         if used_name != guessed_filename:
             guessed_path = path.join(tempdir, guessed_filename)
             shutil.move(the_path, guessed_path)
@@ -287,7 +298,7 @@ class TemplateCommand(BaseCommand):
         try:
             archive.extract(filename, tempdir)
             return tempdir
-        except (archive.ArchiveException, IOError), e:
+        except (archive.ArchiveException, IOError) as e:
             raise CommandError("couldn't extract file %s to %s: %s" %
                                (filename, tempdir, e))
 

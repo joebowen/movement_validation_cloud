@@ -2,6 +2,7 @@
 Parser and utilities for the smart 'if' tag
 """
 
+
 # Using a simple top down parser, as described here:
 #    http://effbot.org/zone/simple-top-down-parsing.htm.
 # 'led' = left denotation
@@ -13,9 +14,9 @@ class TokenBase(object):
     Base class for operators and literals, mainly for debugging and for throwing
     syntax errors.
     """
-    id = None # node/token type name
-    value = None # used by literals
-    first = second = None # used by tree nodes
+    id = None  # node/token type name
+    value = None  # used by literals
+    first = second = None  # used by tree nodes
 
     def nud(self, parser):
         # Null denotation - called in prefix context
@@ -157,15 +158,15 @@ class IfParser(object):
         i = 0
         while i < l:
             token = tokens[i]
-            if token == "not" and i + 1 < l and tokens[i+1] == "in":
+            if token == "not" and i + 1 < l and tokens[i + 1] == "in":
                 token = "not in"
-                i += 1 # skip 'in'
+                i += 1  # skip 'in'
             mapped_tokens.append(self.translate_token(token))
             i += 1
 
         self.tokens = mapped_tokens
         self.pos = 0
-        self.current_token = self.next()
+        self.current_token = self.next_token()
 
     def translate_token(self, token):
         try:
@@ -175,7 +176,7 @@ class IfParser(object):
         else:
             return op()
 
-    def next(self):
+    def next_token(self):
         if self.pos >= len(self.tokens):
             return EndToken
         else:
@@ -193,11 +194,11 @@ class IfParser(object):
 
     def expression(self, rbp=0):
         t = self.current_token
-        self.current_token = self.next()
+        self.current_token = self.next_token()
         left = t.nud(self)
         while rbp < self.current_token.lbp:
             t = self.current_token
-            self.current_token = self.next()
+            self.current_token = self.next_token()
             left = t.led(left, self)
         return left
 

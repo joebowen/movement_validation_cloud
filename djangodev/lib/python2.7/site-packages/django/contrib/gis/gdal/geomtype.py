@@ -1,50 +1,53 @@
 from django.contrib.gis.gdal.error import OGRException
 
-#### OGRGeomType ####
+from django.utils import six
+
+
 class OGRGeomType(object):
     "Encapulates OGR Geometry Types."
 
     wkb25bit = -2147483648
 
     # Dictionary of acceptable OGRwkbGeometryType s and their string names.
-    _types = {0 : 'Unknown',
-              1 : 'Point',
-              2 : 'LineString',
-              3 : 'Polygon',
-              4 : 'MultiPoint',
-              5 : 'MultiLineString',
-              6 : 'MultiPolygon',
-              7 : 'GeometryCollection',
-              100 : 'None',
-              101 : 'LinearRing',
+    _types = {0: 'Unknown',
+              1: 'Point',
+              2: 'LineString',
+              3: 'Polygon',
+              4: 'MultiPoint',
+              5: 'MultiLineString',
+              6: 'MultiPolygon',
+              7: 'GeometryCollection',
+              100: 'None',
+              101: 'LinearRing',
               1 + wkb25bit: 'Point25D',
               2 + wkb25bit: 'LineString25D',
               3 + wkb25bit: 'Polygon25D',
               4 + wkb25bit: 'MultiPoint25D',
-              5 + wkb25bit : 'MultiLineString25D',
-              6 + wkb25bit : 'MultiPolygon25D',
-              7 + wkb25bit : 'GeometryCollection25D',
+              5 + wkb25bit: 'MultiLineString25D',
+              6 + wkb25bit: 'MultiPolygon25D',
+              7 + wkb25bit: 'GeometryCollection25D',
               }
     # Reverse type dictionary, keyed by lower-case of the name.
-    _str_types = dict([(v.lower(), k) for k, v in _types.items()])
+    _str_types = dict((v.lower(), k) for k, v in _types.items())
 
     def __init__(self, type_input):
         "Figures out the correct OGR Type based upon the input."
         if isinstance(type_input, OGRGeomType):
             num = type_input.num
-        elif isinstance(type_input, basestring):
+        elif isinstance(type_input, six.string_types):
             type_input = type_input.lower()
-            if type_input == 'geometry': type_input='unknown'
+            if type_input == 'geometry':
+                type_input = 'unknown'
             num = self._str_types.get(type_input, None)
             if num is None:
                 raise OGRException('Invalid OGR String Type "%s"' % type_input)
         elif isinstance(type_input, int):
-            if not type_input in self._types:
+            if type_input not in self._types:
                 raise OGRException('Invalid OGR Integer Type: %d' % type_input)
             num = type_input
         else:
             raise TypeError('Invalid OGR input type given.')
-        
+
         # Setting the OGR geometry type number.
         self.num = num
 
@@ -59,7 +62,7 @@ class OGRGeomType(object):
         """
         if isinstance(other, OGRGeomType):
             return self.num == other.num
-        elif isinstance(other, basestring):
+        elif isinstance(other, six.string_types):
             return self.name.lower() == other.lower()
         elif isinstance(other, int):
             return self.num == other

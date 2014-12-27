@@ -1,9 +1,13 @@
 """
 Base/mixin classes for the spatial backend database operations and the
-`SpatialRefSys` model the backend.
+`<Backend>SpatialRefSys` model.
 """
 import re
+
 from django.contrib.gis import gdal
+from django.utils import six
+from django.utils.encoding import python_2_unicode_compatible
+
 
 class BaseSpatialOperations(object):
     """
@@ -16,7 +20,7 @@ class BaseSpatialOperations(object):
     geometry_operators = {}
     geography_operators = {}
     geography_functions = {}
-    gis_terms = {}
+    gis_terms = set()
     truncate_params = {}
 
     # Quick booleans for the type of this spatial backend, and
@@ -30,8 +34,9 @@ class BaseSpatialOperations(object):
     # How the geometry column should be selected.
     select = None
 
-    # Does the spatial database have a geography type?
+    # Does the spatial database have a geometry or geography type?
     geography = False
+    geometry = False
 
     area = False
     centroid = False
@@ -88,8 +93,6 @@ class BaseSpatialOperations(object):
 
     # For quoting column values, rather than columns.
     def geo_quote_name(self, name):
-        if isinstance(name, unicode):
-            name = name.encode('ascii')
         return "'%s'" % name
 
     # GeometryField operations
@@ -98,7 +101,7 @@ class BaseSpatialOperations(object):
         Returns the database column type for the geometry field on
         the spatial backend.
         """
-        raise NotImplementedError
+        raise NotImplementedError('subclasses of BaseSpatialOperations must provide a geo_db_type() method')
 
     def get_distance(self, f, value, lookup_type):
         """
@@ -114,26 +117,38 @@ class BaseSpatialOperations(object):
         stored procedure call to the transformation function of the spatial
         backend.
         """
-        raise NotImplementedError
+        raise NotImplementedError('subclasses of BaseSpatialOperations must provide a geo_db_placeholder() method')
+
+    def get_expression_column(self, evaluator):
+        """
+        Helper method to return the quoted column string from the evaluator
+        for its expression.
+        """
+        for expr, col_tup in evaluator.cols:
+            if expr is evaluator.expression:
+                return '%s.%s' % tuple(map(self.quote_name, col_tup))
+        raise Exception("Could not find the column for the expression.")
 
     # Spatial SQL Construction
     def spatial_aggregate_sql(self, agg):
         raise NotImplementedError('Aggregate support not implemented for this spatial backend.')
 
     def spatial_lookup_sql(self, lvalue, lookup_type, value, field):
-        raise NotImplementedError
+        raise NotImplementedError('subclasses of BaseSpatialOperations must a provide spatial_lookup_sql() method')
 
     # Routines for getting the OGC-compliant models.
     def geometry_columns(self):
-        raise NotImplementedError
+        raise NotImplementedError('subclasses of BaseSpatialOperations must a provide geometry_columns() method')
 
     def spatial_ref_sys(self):
-        raise NotImplementedError
+        raise NotImplementedError('subclasses of BaseSpatialOperations must a provide spatial_ref_sys() method')
 
+
+@python_2_unicode_compatible
 class SpatialRefSysMixin(object):
     """
     The SpatialRefSysMixin is a class used by the database-dependent
-    SpatialRefSys objects to reduce redundnant code.
+    SpatialRefSys objects to reduce redundant code.
     """
     # For pulling out the spheroid from the spatial reference string. This
     # regular expression is used only if the user does not have GDAL installed.
@@ -164,13 +179,13 @@ class SpatialRefSysMixin(object):
                 try:
                     self._srs = gdal.SpatialReference(self.wkt)
                     return self.srs
-                except Exception, msg:
+                except Exception as msg:
                     pass
 
                 try:
                     self._srs = gdal.SpatialReference(self.proj4text)
                     return self.srs
-                except Exception, msg:
+                except Exception as msg:
                     pass
 
                 raise Exception('Could not get OSR SpatialReference from WKT: %s\nError:\n%s' % (self.wkt, msg))
@@ -187,8 +202,10 @@ class SpatialRefSysMixin(object):
             return self.srs.ellipsoid
         else:
             m = self.spheroid_regex.match(self.wkt)
-            if m: return (float(m.group('major')), float(m.group('flattening')))
-            else: return None
+            if m:
+                return (float(m.group('major')), float(m.group('flattening')))
+            else:
+                return None
 
     @property
     def name(self):
@@ -287,7 +304,7 @@ class SpatialRefSysMixin(object):
     def get_units(cls, wkt):
         """
         Class method used by GeometryField on initialization to
-        retrive the units on the given WKT, without having to use
+        retrieve the units on the given WKT, without having to use
         any of the database fields.
         """
         if gdal.HAS_GDAL:
@@ -324,12 +341,12 @@ class SpatialRefSysMixin(object):
                 radius, flattening = sphere_params
             return 'SPHEROID["%s",%s,%s]' % (sphere_name, radius, flattening)
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Returns the string representation.  If GDAL is installed,
         it will be 'pretty' OGC WKT.
         """
         try:
-            return unicode(self.srs)
-        except:
-            return unicode(self.wkt)
+            return six.text_type(self.srs)
+        except Exception:
+            return six.text_type(self.wkt)

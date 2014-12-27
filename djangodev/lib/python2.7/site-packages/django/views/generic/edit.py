@@ -1,12 +1,16 @@
-from django.forms import models as model_forms
+import warnings
+
 from django.core.exceptions import ImproperlyConfigured
+from django.forms import models as model_forms
 from django.http import HttpResponseRedirect
-from django.views.generic.base import TemplateResponseMixin, View
+from django.utils.deprecation import RemovedInDjango18Warning
+from django.utils.encoding import force_text
+from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 from django.views.generic.detail import (SingleObjectMixin,
                         SingleObjectTemplateResponseMixin, BaseDetailView)
 
 
-class FormMixin(object):
+class FormMixin(ContextMixin):
     """
     A mixin that provides a way to show and handle a form in a request.
     """
@@ -14,12 +18,19 @@ class FormMixin(object):
     initial = {}
     form_class = None
     success_url = None
+    prefix = None
 
     def get_initial(self):
         """
         Returns the initial data to use for forms on this view.
         """
         return self.initial.copy()
+
+    def get_prefix(self):
+        """
+        Returns the prefix to use for forms on this view
+        """
+        return self.prefix
 
     def get_form_class(self):
         """
@@ -35,9 +46,13 @@ class FormMixin(object):
 
     def get_form_kwargs(self):
         """
-        Returns the keyword arguments for instanciating the form.
+        Returns the keyword arguments for instantiating the form.
         """
-        kwargs = {'initial': self.get_initial()}
+        kwargs = {
+            'initial': self.get_initial(),
+            'prefix': self.get_prefix(),
+        }
+
         if self.request.method in ('POST', 'PUT'):
             kwargs.update({
                 'data': self.request.POST,
@@ -45,21 +60,29 @@ class FormMixin(object):
             })
         return kwargs
 
-    def get_context_data(self, **kwargs):
-        return kwargs
-
     def get_success_url(self):
+        """
+        Returns the supplied success URL.
+        """
         if self.success_url:
-            url = self.success_url
+            # Forcing possible reverse_lazy evaluation
+            url = force_text(self.success_url)
         else:
             raise ImproperlyConfigured(
                 "No URL to redirect to. Provide a success_url.")
         return url
 
     def form_valid(self, form):
+        """
+        If the form is valid, redirect to the supplied URL.
+        """
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form):
+        """
+        If the form is invalid, re-render the context data with the
+        data-filled form and errors.
+        """
         return self.render_to_response(self.get_context_data(form=form))
 
 
@@ -67,10 +90,11 @@ class ModelFormMixin(FormMixin, SingleObjectMixin):
     """
     A mixin that provides a way to show and handle a modelform in a request.
     """
+    fields = None
 
     def get_form_class(self):
         """
-        Returns the form class to use in this view
+        Returns the form class to use in this view.
         """
         if self.form_class:
             return self.form_class
@@ -86,17 +110,27 @@ class ModelFormMixin(FormMixin, SingleObjectMixin):
                 # Try to get a queryset and extract the model class
                 # from that
                 model = self.get_queryset().model
-            return model_forms.modelform_factory(model)
+
+            if self.fields is None:
+                warnings.warn("Using ModelFormMixin (base class of %s) without "
+                              "the 'fields' attribute is deprecated." % self.__class__.__name__,
+                              RemovedInDjango18Warning)
+
+            return model_forms.modelform_factory(model, fields=self.fields)
 
     def get_form_kwargs(self):
         """
-        Returns the keyword arguments for instanciating the form.
+        Returns the keyword arguments for instantiating the form.
         """
         kwargs = super(ModelFormMixin, self).get_form_kwargs()
-        kwargs.update({'instance': self.object})
+        if hasattr(self, 'object'):
+            kwargs.update({'instance': self.object})
         return kwargs
 
     def get_success_url(self):
+        """
+        Returns the supplied URL.
+        """
         if self.success_url:
             url = self.success_url % self.object.__dict__
         else:
@@ -109,29 +143,30 @@ class ModelFormMixin(FormMixin, SingleObjectMixin):
         return url
 
     def form_valid(self, form):
+        """
+        If the form is valid, save the associated model.
+        """
         self.object = form.save()
         return super(ModelFormMixin, self).form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = kwargs
-        if self.object:
-            context['object'] = self.object
-            context_object_name = self.get_context_object_name(self.object)
-            if context_object_name:
-                context[context_object_name] = self.object
-        return context
 
 
 class ProcessFormView(View):
     """
-    A mixin that processes a form on POST.
+    A mixin that renders a form on GET and processes it on POST.
     """
     def get(self, request, *args, **kwargs):
+        """
+        Handles GET requests and instantiates a blank version of the form.
+        """
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         return self.render_to_response(self.get_context_data(form=form))
 
     def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance with the passed
+        POST variables and then checked for validity.
+        """
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         if form.is_valid():
@@ -174,7 +209,7 @@ class BaseCreateView(ModelFormMixin, ProcessFormView):
 
 class CreateView(SingleObjectTemplateResponseMixin, BaseCreateView):
     """
-    View for creating an new object instance,
+    View for creating a new object instance,
     with a response rendered by template.
     """
     template_name_suffix = '_form'
@@ -198,7 +233,7 @@ class BaseUpdateView(ModelFormMixin, ProcessFormView):
 class UpdateView(SingleObjectTemplateResponseMixin, BaseUpdateView):
     """
     View for updating an object,
-    with a response rendered by template..
+    with a response rendered by template.
     """
     template_name_suffix = '_form'
 
@@ -210,17 +245,22 @@ class DeletionMixin(object):
     success_url = None
 
     def delete(self, request, *args, **kwargs):
+        """
+        Calls the delete() method on the fetched object and then
+        redirects to the success URL.
+        """
         self.object = self.get_object()
+        success_url = self.get_success_url()
         self.object.delete()
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(success_url)
 
     # Add support for browsers which only accept GET and POST for now.
-    def post(self, *args, **kwargs):
-        return self.delete(*args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
 
     def get_success_url(self):
         if self.success_url:
-            return self.success_url
+            return self.success_url % self.object.__dict__
         else:
             raise ImproperlyConfigured(
                 "No URL to redirect to. Provide a success_url.")

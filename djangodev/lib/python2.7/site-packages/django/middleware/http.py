@@ -1,8 +1,9 @@
 from django.utils.http import http_date, parse_http_date_safe
 
+
 class ConditionalGetMiddleware(object):
     """
-    Handles conditional GET operations. If the response has a ETag or
+    Handles conditional GET operations. If the response has an ETag or
     Last-Modified header, and the request has If-None-Match or
     If-Modified-Since, the response is replaced by an HttpNotModified.
 
@@ -10,7 +11,7 @@ class ConditionalGetMiddleware(object):
     """
     def process_response(self, request, response):
         response['Date'] = http_date()
-        if not response.has_header('Content-Length'):
+        if not response.streaming and not response.has_header('Content-Length'):
             response['Content-Length'] = str(len(response.content))
 
         if response.has_header('ETag'):

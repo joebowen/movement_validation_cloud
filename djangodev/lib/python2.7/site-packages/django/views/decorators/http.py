@@ -2,18 +2,18 @@
 Decorators for views based on HTTP headers.
 """
 
+import logging
 from calendar import timegm
 from functools import wraps
 
 from django.utils.decorators import decorator_from_middleware, available_attrs
 from django.utils.http import http_date, parse_http_date_safe, parse_etags, quote_etag
-from django.utils.log import getLogger
 from django.middleware.http import ConditionalGetMiddleware
 from django.http import HttpResponseNotAllowed, HttpResponseNotModified, HttpResponse
 
 conditional_page = decorator_from_middleware(ConditionalGetMiddleware)
 
-logger = getLogger('django.request')
+logger = logging.getLogger('django.request')
 
 
 def require_http_methods(request_method_list):
@@ -50,6 +50,7 @@ require_POST.__doc__ = "Decorator to require that a view only accept the POST me
 
 require_safe = require_http_methods(["GET", "HEAD"])
 require_safe.__doc__ = "Decorator to require that a view only accept safe methods: GET and HEAD."
+
 
 def condition(etag_func=None, last_modified_func=None):
     """
@@ -157,10 +158,11 @@ def condition(etag_func=None, last_modified_func=None):
         return inner
     return decorator
 
+
 # Shortcut decorators for common cases based on ETag or Last-Modified only
 def etag(etag_func):
     return condition(etag_func=etag_func)
 
+
 def last_modified(last_modified_func):
     return condition(last_modified_func=last_modified_func)
-

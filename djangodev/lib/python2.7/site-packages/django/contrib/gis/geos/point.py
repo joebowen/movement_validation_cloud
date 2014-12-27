@@ -2,6 +2,9 @@ from ctypes import c_uint
 from django.contrib.gis.geos.error import GEOSException
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.geos import prototypes as capi
+from django.utils import six
+from django.utils.six.moves import xrange
+
 
 class Point(GEOSGeometry):
     _minlength = 2
@@ -20,9 +23,9 @@ class Point(GEOSGeometry):
             # Here a tuple or list was passed in under the `x` parameter.
             ndim = len(x)
             coords = x
-        elif isinstance(x, (int, float, long)) and isinstance(y, (int, float, long)):
+        elif isinstance(x, six.integer_types + (float,)) and isinstance(y, six.integer_types + (float,)):
             # Here X, Y, and (optionally) Z were passed in individually, as parameters.
-            if isinstance(z, (int, float, long)):
+            if isinstance(z, six.integer_types + (float,)):
                 ndim = 3
                 coords = [x, y, z]
             else:
@@ -46,9 +49,10 @@ class Point(GEOSGeometry):
 
         cs = capi.create_cs(c_uint(1), c_uint(ndim))
         i = iter(coords)
-        capi.cs_setx(cs, 0, i.next())
-        capi.cs_sety(cs, 0, i.next())
-        if ndim == 3: capi.cs_setz(cs, 0, i.next())
+        capi.cs_setx(cs, 0, next(i))
+        capi.cs_sety(cs, 0, next(i))
+        if ndim == 3:
+            capi.cs_setz(cs, 0, next(i))
 
         return capi.create_point(cs)
 
@@ -72,9 +76,12 @@ class Point(GEOSGeometry):
 
     def __len__(self):
         "Returns the number of dimensions for this Point (either 0, 2 or 3)."
-        if self.empty: return 0
-        if self.hasz: return 3
-        else: return 2
+        if self.empty:
+            return 0
+        if self.hasz:
+            return 3
+        else:
+            return 2
 
     def _get_single_external(self, index):
         if index == 0:

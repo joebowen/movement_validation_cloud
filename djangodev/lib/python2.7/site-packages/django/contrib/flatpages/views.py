@@ -1,9 +1,9 @@
-from django.contrib.flatpages.models import FlatPage
-from django.template import loader, RequestContext
-from django.shortcuts import get_object_or_404
-from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect
 from django.conf import settings
-from django.core.xheaders import populate_xheaders
+from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect
+from django.shortcuts import get_object_or_404
+from django.template import loader, RequestContext
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_protect
 
@@ -17,31 +17,35 @@ DEFAULT_TEMPLATE = 'flatpages/default.html'
 # or a redirect is required for authentication, the 404 needs to be returned
 # without any CSRF checks. Therefore, we only
 # CSRF protect the internal implementation.
+
+
 def flatpage(request, url):
     """
     Public interface to the flat page view.
 
     Models: `flatpages.flatpages`
     Templates: Uses the template defined by the ``template_name`` field,
-        or `flatpages/default.html` if template_name is not defined.
+        or :template:`flatpages/default.html` if template_name is not defined.
     Context:
         flatpage
             `flatpages.flatpages` object
     """
     if not url.startswith('/'):
         url = '/' + url
+    site_id = get_current_site(request).id
     try:
         f = get_object_or_404(FlatPage,
-            url__exact=url, sites__id__exact=settings.SITE_ID)
+            url=url, sites=site_id)
     except Http404:
         if not url.endswith('/') and settings.APPEND_SLASH:
             url += '/'
             f = get_object_or_404(FlatPage,
-                url__exact=url, sites__id__exact=settings.SITE_ID)
+                url=url, sites=site_id)
             return HttpResponsePermanentRedirect('%s/' % request.path)
         else:
             raise
     return render_flatpage(request, f)
+
 
 @csrf_protect
 def render_flatpage(request, f):
@@ -68,5 +72,4 @@ def render_flatpage(request, f):
         'flatpage': f,
     })
     response = HttpResponse(t.render(c))
-    populate_xheaders(request, response, FlatPage, f.id)
     return response

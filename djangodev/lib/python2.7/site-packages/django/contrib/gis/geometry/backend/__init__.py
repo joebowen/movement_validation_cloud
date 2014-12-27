@@ -1,15 +1,16 @@
+from importlib import import_module
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.importlib import import_module
 
 geom_backend = getattr(settings, 'GEOMETRY_BACKEND', 'geos')
 
 try:
-    module = import_module('.%s' % geom_backend, 'django.contrib.gis.geometry.backend')
-except ImportError, e:
+    module = import_module('django.contrib.gis.geometry.backend.%s' % geom_backend)
+except ImportError:
     try:
         module = import_module(geom_backend)
-    except ImportError, e_user:
+    except ImportError:
         raise ImproperlyConfigured('Could not import user-defined GEOMETRY_BACKEND '
                                    '"%s".' % geom_backend)
 

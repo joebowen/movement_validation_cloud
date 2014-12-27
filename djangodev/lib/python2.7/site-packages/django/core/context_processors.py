@@ -6,10 +6,14 @@ and returns a dictionary to add to the context.
 These are referenced from the setting TEMPLATE_CONTEXT_PROCESSORS and used by
 RequestContext.
 """
+from __future__ import unicode_literals
 
 from django.conf import settings
 from django.middleware.csrf import get_token
+from django.utils import six
+from django.utils.encoding import smart_text
 from django.utils.functional import lazy
+
 
 def csrf(request):
     """
@@ -24,10 +28,11 @@ def csrf(request):
             # instead of returning an empty dict.
             return 'NOTPROVIDED'
         else:
-            return token
-    _get_val = lazy(_get_val, str)
+            return smart_text(token)
+    _get_val = lazy(_get_val, six.text_type)
 
-    return {'csrf_token': _get_val() }
+    return {'csrf_token': _get_val()}
+
 
 def debug(request):
     "Returns context variables helpful for debugging."
@@ -37,6 +42,7 @@ def debug(request):
         from django.db import connection
         context_extras['sql_queries'] = connection.queries
     return context_extras
+
 
 def i18n(request):
     from django.utils import translation
@@ -48,10 +54,12 @@ def i18n(request):
 
     return context_extras
 
+
 def tz(request):
     from django.utils import timezone
 
     return {'TIME_ZONE': timezone.get_current_timezone_name()}
+
 
 def static(request):
     """
@@ -60,6 +68,7 @@ def static(request):
     """
     return {'STATIC_URL': settings.STATIC_URL}
 
+
 def media(request):
     """
     Adds media-related context variables to the context.
@@ -67,34 +76,6 @@ def media(request):
     """
     return {'MEDIA_URL': settings.MEDIA_URL}
 
+
 def request(request):
     return {'request': request}
-
-# PermWrapper and PermLookupDict proxy the permissions system into objects that
-# the template system can understand. They once lived here -- they have
-# been moved to django.contrib.auth.context_processors.
-
-from django.contrib.auth.context_processors import PermLookupDict as RealPermLookupDict
-from django.contrib.auth.context_processors import PermWrapper as RealPermWrapper
-
-class PermLookupDict(RealPermLookupDict):
-    def __init__(self, *args, **kwargs):
-        import warnings
-        warnings.warn(
-            "`django.core.context_processors.PermLookupDict` is " \
-            "deprecated; use `django.contrib.auth.context_processors.PermLookupDict` " \
-            "instead.",
-            DeprecationWarning
-        )
-        super(PermLookupDict, self).__init__(*args, **kwargs)
-
-class PermWrapper(RealPermWrapper):
-    def __init__(self, *args, **kwargs):
-        import warnings
-        warnings.warn(
-            "`django.core.context_processors.PermWrapper` is " \
-            "deprecated; use `django.contrib.auth.context_processors.PermWrapper` " \
-            "instead.",
-            DeprecationWarning
-        )
-        super(PermWrapper, self).__init__(*args, **kwargs)

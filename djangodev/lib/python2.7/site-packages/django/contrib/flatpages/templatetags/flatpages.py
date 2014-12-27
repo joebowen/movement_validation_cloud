@@ -1,6 +1,7 @@
 from django import template
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.shortcuts import get_current_site
 
 
 register = template.Library()
@@ -19,7 +20,11 @@ class FlatpageNode(template.Node):
             self.user = None
 
     def render(self, context):
-        flatpages = FlatPage.objects.filter(sites__id=settings.SITE_ID)
+        if 'request' in context:
+            site_pk = get_current_site(context['request']).pk
+        else:
+            site_pk = settings.SITE_ID
+        flatpages = FlatPage.objects.filter(sites__id=site_pk)
         # If a prefix was specified, add a filter
         if self.starts_with:
             flatpages = flatpages.filter(
@@ -68,9 +73,9 @@ def get_flatpages(parser, token):
     """
     bits = token.split_contents()
     syntax_message = ("%(tag_name)s expects a syntax of %(tag_name)s "
-                       "['url_starts_with'] [for user] as context_name" %
-                       dict(tag_name=bits[0]))
-   # Must have at 3-6 bits in the tag
+                      "['url_starts_with'] [for user] as context_name" %
+                      dict(tag_name=bits[0]))
+    # Must have at 3-6 bits in the tag
     if len(bits) >= 3 and len(bits) <= 6:
 
         # If there's an even number of bits, there's no prefix

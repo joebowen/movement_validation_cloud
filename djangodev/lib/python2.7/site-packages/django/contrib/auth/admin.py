@@ -1,6 +1,8 @@
 from django.db import transaction
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.admin.options import IS_POPUP_VAR
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import (UserCreationForm, UserChangeForm,
     AdminPasswordChangeForm)
 from django.contrib.auth.models import User, Group
@@ -11,12 +13,13 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.html import escape
 from django.utils.decorators import method_decorator
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
 csrf_protect_m = method_decorator(csrf_protect)
+sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
+
 
 class GroupAdmin(admin.ModelAdmin):
     search_fields = ('name',)
@@ -46,17 +49,17 @@ class UserAdmin(admin.ModelAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2')}
-        ),
+            'fields': ('username', 'password1', 'password2'),
+        }),
     )
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
-    list_filter = ('is_staff', 'is_superuser', 'is_active')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
-    filter_horizontal = ('user_permissions',)
+    filter_horizontal = ('groups', 'user_permissions',)
 
     def get_fieldsets(self, request, obj=None):
         if not obj:
@@ -69,10 +72,7 @@ class UserAdmin(admin.ModelAdmin):
         """
         defaults = {}
         if obj is None:
-            defaults.update({
-                'form': self.add_form,
-                'fields': admin.util.flatten_fieldsets(self.add_fieldsets),
-            })
+            defaults['form'] = self.add_form
         defaults.update(kwargs)
         return super(UserAdmin, self).get_form(request, obj, **defaults)
 
@@ -83,9 +83,15 @@ class UserAdmin(admin.ModelAdmin):
              self.admin_site.admin_view(self.user_change_password))
         ) + super(UserAdmin, self).get_urls()
 
-    @sensitive_post_parameters()
+    def lookup_allowed(self, lookup, value):
+        # See #20078: we don't want to allow any lookups involving passwords.
+        if lookup.startswith('password'):
+            return False
+        return super(UserAdmin, self).lookup_allowed(lookup, value)
+
+    @sensitive_post_parameters_m
     @csrf_protect_m
-    @transaction.commit_on_success
+    @transaction.atomic
     def add_view(self, request, form_url='', extra_context=None):
         # It's an error for a user to have add permission but NOT change
         # permission for users. If we allowed such users to add users, they
@@ -105,38 +111,43 @@ class UserAdmin(admin.ModelAdmin):
             raise PermissionDenied
         if extra_context is None:
             extra_context = {}
+        username_field = self.model._meta.get_field(self.model.USERNAME_FIELD)
         defaults = {
             'auto_populated_fields': (),
-            'username_help_text': self.model._meta.get_field('username').help_text,
+            'username_help_text': username_field.help_text,
         }
         extra_context.update(defaults)
         return super(UserAdmin, self).add_view(request, form_url,
                                                extra_context)
 
-    @sensitive_post_parameters()
+    @sensitive_post_parameters_m
     def user_change_password(self, request, id, form_url=''):
         if not self.has_change_permission(request):
             raise PermissionDenied
-        user = get_object_or_404(self.queryset(request), pk=id)
+        user = get_object_or_404(self.get_queryset(request), pk=id)
         if request.method == 'POST':
             form = self.change_password_form(user, request.POST)
             if form.is_valid():
                 form.save()
+                change_message = self.construct_change_message(request, form, None)
+                self.log_change(request, user, change_message)
                 msg = ugettext('Password changed successfully.')
                 messages.success(request, msg)
+                update_session_auth_hash(request, form.user)
                 return HttpResponseRedirect('..')
         else:
             form = self.change_password_form(user)
 
-        fieldsets = [(None, {'fields': form.base_fields.keys()})]
+        fieldsets = [(None, {'fields': list(form.base_fields)})]
         adminForm = admin.helpers.AdminForm(form, fieldsets, {})
 
         context = {
-            'title': _('Change password: %s') % escape(user.username),
+            'title': _('Change password: %s') % escape(user.get_username()),
             'adminForm': adminForm,
-            'form_url': mark_safe(form_url),
+            'form_url': form_url,
             'form': form,
-            'is_popup': '_popup' in request.REQUEST,
+            'is_popup': (IS_POPUP_VAR in request.POST or
+                         IS_POPUP_VAR in request.GET),
             'add': True,
             'change': False,
             'has_delete_permission': False,
@@ -147,12 +158,13 @@ class UserAdmin(admin.ModelAdmin):
             'save_as': False,
             'show_save': True,
         }
-        return TemplateResponse(request, [
+        context.update(admin.site.each_context())
+        return TemplateResponse(request,
             self.change_user_password_template or
-            'admin/auth/user/change_password.html'
-        ], context, current_app=self.admin_site.name)
+            'admin/auth/user/change_password.html',
+            context, current_app=self.admin_site.name)
 
-    def response_add(self, request, obj, post_url_continue='../%s/'):
+    def response_add(self, request, obj, post_url_continue=None):
         """
         Determines the HttpResponse for the add_view stage. It mostly defers to
         its superclass implementation but is customized because the User model
@@ -163,11 +175,10 @@ class UserAdmin(admin.ModelAdmin):
         # button except in two scenarios:
         # * The user has pressed the 'Save and add another' button
         # * We are adding a user in a popup
-        if '_addanother' not in request.POST and '_popup' not in request.POST:
+        if '_addanother' not in request.POST and IS_POPUP_VAR not in request.POST:
             request.POST['_continue'] = 1
         return super(UserAdmin, self).response_add(request, obj,
                                                    post_url_continue)
 
 admin.site.register(Group, GroupAdmin)
 admin.site.register(User, UserAdmin)
-
