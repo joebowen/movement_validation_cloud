@@ -28,7 +28,7 @@ pathtools==0.1.2
 ##pp==1.5.7-pathos
 ##processing==0.52-pathos
 pymongo==2.7.2
-pyramidal==0.1.0
+##pyramidal==0.1.0
 six==1.8.0
 symmetricjsonrpc==0.1.0
 tornado==4.0.2
