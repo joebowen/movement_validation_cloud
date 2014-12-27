@@ -37,3 +37,4 @@ virtualenv==1.7.2
 watchdog==0.8.2
 wsgiref==0.1.2
 ##zenmap==6.46
+boto==2.34.0

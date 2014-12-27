@@ -1,0 +1,16 @@
+{% extends "Openworm/bootstrap_dashboard.html" %}
+
+{% block title %}REST API{% endblock %}
+
+{% block content %}
+    <h1 class="page-header">REST API Views</h1>
+    <ul>
+    {% for link in links %}
+    <li>
+    <a href="/api/{{link.pattern}}">{{link.pattern}}</a>
+    <br>
+    <a href="/api/{{link.pattern}}/0">{{link.pattern}}/0</a>
+    </li>
+    {% endfor%}
+    </ul>
+{% endblock %}

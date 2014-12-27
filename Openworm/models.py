@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from s3direct.fields import S3DirectField
 from django.contrib.auth.models import User
 
 ## Possible field in db models
@@ -166,7 +167,8 @@ class Plate(models.Model):
     wormlistkey = models.ForeignKey('Wormlist', db_column='WormListKey')
     def get_subclass_name(self):
         return self.__class__.__name__
-    
+
+    name = models.CharField(db_column='Name', max_length=100)
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     sampletype = models.CharField(db_column='SampleType', max_length=18, blank=True)
     startdatetime = models.DateTimeField(db_column='StartDateTime', blank=True, null=True)
@@ -199,12 +201,20 @@ class Platefeature(models.Model):
 class Platerawvideo(models.Model):
     #platerawvideokey = models.IntegerField(db_column='PlateRawVideoKey', primary_key=True)
     platekey = models.ForeignKey(Plate, db_column='PlateKey')
-    videometadatakey = models.ForeignKey('Videoattributes', db_column='VideoMetadataKey')
     def get_subclass_name(self):
         return self.__class__.__name__
-    
+
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
-    videofile = models.TextField(db_column='VideoFile', blank=True)
+    name = models.CharField(db_column='Name', max_length=100)
+    description = models.CharField(db_column='Description', max_length=500, blank=True)
+    title = models.CharField(db_column='Title', max_length=20, blank=True)
+    shorttitle = models.CharField(db_column='ShortTitle', max_length=20, blank=True)
+    videofile = S3DirectField(dest='destination_key_from_settings')
+    fps = models.IntegerField(db_column='FPS', blank=True, null=True)
+    numframes = models.FloatField(db_column='NumFrames', blank=True, null=True)
+    width = models.IntegerField(db_column='Width', blank=True, null=True)
+    height = models.IntegerField(db_column='Height', blank=True, null=True)
+    micronsperpixel = models.IntegerField(db_column='MicronsPerPixel', blank=True, null=True)
     class Meta:
         db_table = 'PlateRawVideo'
 
@@ -268,6 +278,7 @@ class User(models.Model):
         db_table = 'User'
 """
 
+"""
 class Videoattributes(models.Model):
     #videometadatakey = models.CharField(db_column='VideoMetadataKey', primary_key=True, max_length=18)
     def get_subclass_name(self):
@@ -281,6 +292,7 @@ class Videoattributes(models.Model):
     micronsperpixel = models.IntegerField(db_column='MicronsPerPixel', blank=True, null=True)
     class Meta:
         db_table = 'VideoAttributes'
+"""
 
 class Worm(models.Model):
     #wormkey = models.IntegerField(db_column='WormKey', primary_key=True)

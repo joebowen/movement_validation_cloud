@@ -1,0 +1,13 @@
+{% extends "Openworm/bootstrap_dashboard.html" %}
+
+{% block title %}Video Upload{% endblock %}
+
+{% block content %}
+<form action="{{ action }}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <ul>
+    {{ form.as_ul }}
+  </ul>
+  <input type="submit" value="Save" />
+</form>
+{% endblock %}

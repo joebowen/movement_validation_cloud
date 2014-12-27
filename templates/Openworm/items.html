@@ -22,8 +22,7 @@
 <div class="btn-group" role="group" aria-label="...">
     <button type="button" class="btn btn-default" onclick="window.location.href='/api/{{ Name }}'; return false;">New</button>
     {% if id != -1 %}
-        <button type="button" class="btn btn-default">Edit</button>
-        <button type="button" class="btn btn-default">Delete</button>
+        <button type="button" class="btn btn-default" onclick="window.location.href='/api/{{ Name }}/{{ id }}'; return false;">Edit</button>
     {% endif %}
 </div>
 {% endblock %}

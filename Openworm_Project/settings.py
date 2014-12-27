@@ -120,3 +120,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+# AWS keys
+#django
+AWS_SECRET_ACCESS_KEY = 'NlV5KplsfEAiPv2dMCl0tBwmB/U48DfJUAg5GZV8'
+AWS_ACCESS_KEY_ID = 'AKIAJ5K4USYQAKCSVBPQ'
+AWS_STORAGE_BUCKET_NAME = 'openworm-videos'

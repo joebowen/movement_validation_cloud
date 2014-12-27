@@ -3,16 +3,7 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <script src="/static/js/holder.js"></script>
+    <h1 class="page-header">Openworm Movement Validation</h1>
 
-    <h1 class="page-header">Welcome to the</h1>
-    <h2 class="page-header">Openworm Movement Validation Dashboard</h2>
-
-    <ul>
-    {% for link in links %}
-    <li>
-    <a href="/dashboard/{{link.pattern}}">{{link.pattern}}</a>
-    </li>
-    {% endfor%}
-    </ul>
+    {% include "Openworm/links.html" %}
 {% endblock %}
