@@ -17,7 +17,8 @@ django-bootstrap3==5.0.3
 django-s3direct==0.3.8
 docutils==0.12
 ##freemix==0.2
-hidapi==0.7.99-5
+##cython
+##hidapi==0.7.99-5
 impacket==0.9.11
 jsonpickle==0.8.0
 libNeuroML==0.2.4
