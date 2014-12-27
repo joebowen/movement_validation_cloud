@@ -5,7 +5,7 @@ MarkupSafe==0.23
 MySQL-python==1.2.5
 PyLEMS==0.3.7
 PyNN==0.7.5
-PyOSB==0.3.0
+#PyOSB==0.3.0
 PyYAML==3.11
 ## FIXME: could not find svn URL in dependency_links for this package:
 airspeed==0.4.2dev-20141211
