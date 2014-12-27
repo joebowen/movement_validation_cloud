@@ -47,8 +47,7 @@ def VideoUpload(request):
 def handle_uploaded_item(model, post):
     new_model = model()
 
-
-    for key, value in post:
+    for key, value in post.iteritems():
         setattr(new_model, key, value)
 
     new_model.save()
@@ -65,7 +64,7 @@ def dashboard(request, pk='', id=-1):
     for model in get_models(app):
         obj_count[model().get_subclass_name()] = model.objects.all().count() + 1
         if (pk == model().get_subclass_name()):
-            model_list = model
+            model_class = model
             model_name = model().get_subclass_name()
             col_width = 100/(len(model._meta.get_all_field_names()) + 1)
             break
@@ -74,10 +73,10 @@ def dashboard(request, pk='', id=-1):
         return render(request, "Openworm/dashboard.html", {"links":nice_urls})
 
     if (id == -1):
-        model_list = model_list.objects.all().values()
+        model_list = model_class.objects.all().values()
         return render(request, "Openworm/items.html", {"model_list":model_list, "Name":pk.title(), "col_width":col_width, "id":id, "links":nice_urls, "obj_count":obj_count[pk]})
     else:
-        model_list = model_list.objects.filter(id=id).values()
+        model_list = model_class.objects.filter(id=id).values()
 
         import inspect
         import forms
@@ -90,10 +89,11 @@ def dashboard(request, pk='', id=-1):
         if request.method == 'POST':
             form = form_list(request.POST)
             if form.is_valid():
-                id = handle_uploaded_item(model_list,request.POST)
-                return HttpResponseRedirect('/dashboard/' + name + '/' + str(id))
+                id = handle_uploaded_item(model_class,request.POST)
+                return HttpResponseRedirect('/dashboard/' + model_name + '/' + str(id))
         else:
-            form = form_list()
+            print model_list
+            form = form_list(initial=model_list[0])
         return render_to_response('Openworm/item.html', {'form': form, "links":nice_urls}, context_instance=RequestContext(request))
 
 
