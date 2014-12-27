@@ -38,3 +38,4 @@ watchdog==0.8.2
 wsgiref==0.1.2
 ##zenmap==6.46
 boto==2.34.0
+django-bootstrap3==5.0.3
