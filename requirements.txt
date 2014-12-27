@@ -8,7 +8,7 @@ PyNN==0.7.5
 #PyOSB==0.3.0
 PyYAML==3.11
 ## FIXME: could not find svn URL in dependency_links for this package:
-airspeed==0.4.2dev-20141211
+##airspeed==0.4.2dev-20141211
 argh==0.26.1
 argparse==1.2.1
 backports.ssl-match-hostname==3.4.0.2
