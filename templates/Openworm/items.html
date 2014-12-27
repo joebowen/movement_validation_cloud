@@ -20,7 +20,7 @@
 
 {% block header-buttons %}
 <div class="btn-group" role="group" aria-label="...">
-    <button type="button" class="btn btn-default" onclick="window.location.href='/api/{{ Name }}'; return false;">New</button>
+    <button type="button" class="btn btn-default" onclick="window.location.href='/dashboard/{{ Name }}/{{ obj_count }}/'; return false;">New</button>
     {% if id != -1 %}
         <button type="button" class="btn btn-default" onclick="window.location.href='/api/{{ Name }}/{{ id }}'; return false;">Edit</button>
     {% endif %}

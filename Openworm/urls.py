@@ -9,9 +9,9 @@ urlpatterns = patterns('',
     url(r'^dashboard/(?P<pk>[\w]+)/$', views.dashboard, name='Dashboard'),
     url(r'^dashboard/(?P<pk>[\w]+)/(?P<id>[0-9]+)/$', views.dashboard, name='Dashboards'),
 
-    url(r'^api/$', views.api, name='REST API'),
-    url(r'^api/(?P<name>[\w]+)/$', views.ListViewAll.as_view(), name='REST API'),
-    url(r'^api/(?P<name>[\w]+)/(?P<id>[0-9]+)/$', views.ListView.as_view(), name='REST API'),
+    url(r'^api/$', views.RESTapi, name='REST API'),
+    url(r'^api/(?P<name>[\w]+)/$', views.RESTListViewAll.as_view(), name='REST API'),
+    url(r'^api/(?P<name>[\w]+)/(?P<id>[0-9]+)/$', views.RESTListView.as_view(), name='REST API'),
 
     url(r'^videoupload/', views.VideoUpload, name='Video Upload'),
 )

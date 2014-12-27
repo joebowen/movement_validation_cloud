@@ -226,6 +226,7 @@ class Platewireframevideo(models.Model):
         return self.__class__.__name__
     
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    name = models.CharField(db_column='Name', max_length=100)
     wireframevideo = models.TextField(db_column='WireframeVideo', blank=True)
     droppedframeinfo = models.TextField(db_column='DroppedFrameInfo', blank=True)
     class Meta:
@@ -248,7 +249,7 @@ class Strain(models.Model):
         return self.__class__.__name__
     
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
-    strain_name = models.CharField(db_column='Strain_Name', max_length=100)
+    name = models.CharField(db_column='Name', max_length=100)
     gene = models.CharField(db_column='Gene', max_length=20, blank=True)
     genotype = models.TextField(db_column='Genotype', blank=True)
     allele = models.CharField(db_column='Allele', max_length=20, blank=True)
@@ -300,6 +301,7 @@ class Worm(models.Model):
         return self.__class__.__name__
     
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    name = models.CharField(db_column='Name', max_length=100)
     strainkey = models.ForeignKey(Strain, db_column='StrainKey')
     sex = models.CharField(db_column='Sex', max_length=20, blank=True)
     thaweddate = models.DateTimeField(db_column='ThawedDate', blank=True, null=True)
@@ -320,6 +322,7 @@ class Wormfeature(models.Model):
         return self.__class__.__name__
     
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    name = models.CharField(db_column='Name', max_length=100)
     title = models.CharField(db_column='Title', max_length=20, blank=True)
     shorttitle = models.CharField(db_column='ShortTitle', max_length=20, blank=True)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
@@ -358,7 +361,7 @@ class Wormlist(models.Model):
         return self.__class__.__name__
     
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
-    wormlist_identifier = models.IntegerField(db_column='WormList_Identifier')
+    name = models.CharField(db_column='Name', max_length=100)
     class Meta:
         db_table = 'WormList'
 
@@ -380,6 +383,7 @@ class Wormwireframevideo(models.Model):
         return self.__class__.__name__
     
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+    name = models.CharField(db_column='Name', max_length=100)
     wireframevideo = models.TextField(db_column='WireframeVideo', blank=True)
     droppedframeinfo = models.TextField(db_column='DroppedFrameInfo', blank=True)
     class Meta:

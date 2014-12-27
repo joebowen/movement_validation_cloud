@@ -2,7 +2,7 @@ from rest_framework import authentication, permissions
 from django.shortcuts import render
 from rest_framework import generics
 from django.db.models import get_app, get_models
-from forms import UploadFileForm
+from forms import *
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from boto.s3.connection import S3Connection
@@ -11,6 +11,12 @@ from django.template import RequestContext
 from Openworm_Project.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME
 import time
 from models import Platerawvideo, Plate
+
+def index(request):
+    from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
+    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+
+    return render(request, "Openworm/home.html", {"links":nice_urls})
 
 def handle_uploaded_file(f, post):
     conn = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
@@ -38,17 +44,16 @@ def VideoUpload(request):
         form = UploadFileForm()
     return render_to_response('Openworm/videoupload.html', {'form': form, "links":nice_urls}, context_instance=RequestContext(request))
 
-def index(request):
-    from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
-    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+def handle_uploaded_item(model, post):
+    new_model = model()
 
-    return render(request, "Openworm/home.html", {"links":nice_urls})
 
-def api(request):
-    from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
-    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+    for key, value in post:
+        setattr(new_model, key, value)
 
-    return render(request, "Openworm/api.html", {"links":nice_urls})
+    new_model.save()
+
+    return new_model.id
 
 def dashboard(request, pk='', id=-1):
     from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
@@ -58,9 +63,10 @@ def dashboard(request, pk='', id=-1):
 
     app = get_app('Openworm')
     for model in get_models(app):
-        obj_count[model().get_subclass_name()] = model.objects.all().count()
+        obj_count[model().get_subclass_name()] = model.objects.all().count() + 1
         if (pk == model().get_subclass_name()):
             model_list = model
+            model_name = model().get_subclass_name()
             col_width = 100/(len(model._meta.get_all_field_names()) + 1)
             break
 
@@ -69,10 +75,27 @@ def dashboard(request, pk='', id=-1):
 
     if (id == -1):
         model_list = model_list.objects.all().values()
+        return render(request, "Openworm/items.html", {"model_list":model_list, "Name":pk.title(), "col_width":col_width, "id":id, "links":nice_urls, "obj_count":obj_count[pk]})
     else:
         model_list = model_list.objects.filter(id=id).values()
 
-    return render(request, "Openworm/items.html", {"model_list":model_list, "Name":pk.title(), "col_width":col_width, "id":id, "links":nice_urls, "obj_count":obj_count})
+        import inspect
+        import forms
+        clsmembers = inspect.getmembers(forms, inspect.isclass)
+        for key, form in clsmembers:
+            if (model_name + "Form" == key):
+                form_list = form
+                break
+
+        if request.method == 'POST':
+            form = form_list(request.POST)
+            if form.is_valid():
+                id = handle_uploaded_item(model_list,request.POST)
+                return HttpResponseRedirect('/dashboard/' + name + '/' + str(id))
+        else:
+            form = form_list()
+        return render_to_response('Openworm/item.html', {'form': form, "links":nice_urls}, context_instance=RequestContext(request))
+
 
 def get_urls(raw_urls, urlbase=''):
     '''Recursively builds a list of all the urls in the current project and the name of their associated view'''
@@ -84,7 +107,13 @@ def get_urls(raw_urls, urlbase=''):
     nice_urls = sorted(nice_urls, key=itemgetter('pattern')) #sort alphabetically
     return nice_urls
 
-class ListView(generics.ListCreateAPIView):
+def RESTapi(request):
+    from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
+    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+
+    return render(request, "Openworm/api.html", {"links":nice_urls})
+
+class RESTListView(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
@@ -109,7 +138,7 @@ class ListView(generics.ListCreateAPIView):
                 break
         return model_list
 
-class ListViewAll(generics.ListCreateAPIView):
+class RESTListViewAll(generics.ListCreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
