@@ -93,7 +93,10 @@ def dashboard(request, pk='', id=-1):
                 return HttpResponseRedirect('/dashboard/' + model_name + '/' + str(id))
         else:
             print model_list
-            form = form_list(initial=model_list[0])
+            if (len(model_list) > 0):
+                form = form_list(initial=model_list[0])
+            else:
+                form = form_list()
         return render_to_response('Openworm/item.html', {'form': form, "links":nice_urls}, context_instance=RequestContext(request))
 
 
