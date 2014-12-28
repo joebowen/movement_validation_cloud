@@ -20,7 +20,7 @@ def index(request):
     return render(request, "Openworm/home.html", {"links":nice_urls})
 
 def handle_uploaded_file(f, post):
-    conn = S3Connection(profile_name="django")
+    conn = S3Connection()
     bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
     k = Key(bucket)
     k.key = str(time.time()) + "." + f.name
