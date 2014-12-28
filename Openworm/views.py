@@ -10,6 +10,7 @@ from boto.s3.key import Key
 from django.template import RequestContext
 from Openworm_Project.settings import AWS_STORAGE_BUCKET_NAME
 import time
+import re
 from models import Platerawvideo, Plate
 
 def index(request):
@@ -19,7 +20,7 @@ def index(request):
     return render(request, "Openworm/home.html", {"links":nice_urls})
 
 def handle_uploaded_file(f, post):
-    conn = S3Connection()
+    conn = S3Connection(profile_name="django")
     bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
     k = Key(bucket)
     k.key = str(time.time()) + "." + f.name
@@ -51,7 +52,13 @@ def handle_uploaded_item(model, post):
         if not "key" in key:
             setattr(new_model, key, value)
         else:
-            setattr(new_model, key, value)
+            app = get_app('Openworm')
+            for model in get_models(app):
+                p = re.compile('(\w*)key')
+                model_name = p.match(key).group(1).title()
+                if (model_name == model().get_subclass_name()):
+                    print model_name
+                    setattr(new_model, key, model.objects.get(pk = value))
 
     new_model.save()
 
