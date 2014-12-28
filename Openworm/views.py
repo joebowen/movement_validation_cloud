@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from django.template import RequestContext
-from Openworm_Project.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME
+from Openworm_Project.settings import AWS_STORAGE_BUCKET_NAME
 import time
 from models import Platerawvideo, Plate
 
@@ -19,7 +19,7 @@ def index(request):
     return render(request, "Openworm/home.html", {"links":nice_urls})
 
 def handle_uploaded_file(f, post):
-    conn = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+    conn = S3Connection()
     bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
     k = Key(bucket)
     k.key = str(time.time()) + "." + f.name
@@ -48,7 +48,10 @@ def handle_uploaded_item(model, post):
     new_model = model()
 
     for key, value in post.iteritems():
-        setattr(new_model, key, value)
+        if not "key" in key:
+            setattr(new_model, key, value)
+        else:
+            setattr(new_model, key, value)
 
     new_model.save()
 

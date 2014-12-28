@@ -120,3 +120,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+# AWS keys
+AWS_STORAGE_BUCKET_NAME = 'openworm-videos'
