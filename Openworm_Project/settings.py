@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'Openworm',
     'rest_framework',
     'bootstrap3',
+    'django_extensions',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -62,7 +63,7 @@ WSGI_APPLICATION = 'Openworm_Project.wsgi.application'
 if 'RDS_DB_NAME' in os.environ:
     DATABASES = {
         'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.environ['RDS_DB_NAME'],
         'USER': os.environ['RDS_USERNAME'],
         'PASSWORD': os.environ['RDS_PASSWORD'],
@@ -73,7 +74,7 @@ if 'RDS_DB_NAME' in os.environ:
 else:
     DATABASES = {
         'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'django',
         'USER': 'newuser',
         'PASSWORD': 'password',
