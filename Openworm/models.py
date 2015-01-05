@@ -79,10 +79,7 @@ class Experimenter(models.Model):
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
     description = models.CharField(db_column='Description', max_length=500, blank=True)
-    def get_subclass_name(self):
-        return self.__class__.__name__
-    
-    timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
+
     class Meta:
         db_table = 'Experimenter'
 
@@ -297,12 +294,12 @@ class Videoattributes(models.Model):
 
 class Worm(models.Model):
     #wormkey = models.IntegerField(db_column='WormKey', primary_key=True)
+    strainkey = models.ForeignKey(Strain, db_column='StrainKey')
     def get_subclass_name(self):
         return self.__class__.__name__
     
     timestamp =  models.DateTimeField(db_column="Timestamp", auto_now_add=True)
     name = models.CharField(db_column='Name', max_length=100)
-    strainkey = models.ForeignKey(Strain, db_column='StrainKey')
     sex = models.CharField(db_column='Sex', max_length=20, blank=True)
     thaweddate = models.DateTimeField(db_column='ThawedDate', blank=True, null=True)
     generationssincethawing = models.FloatField(db_column='GenerationsSinceThawing', blank=True, null=True)

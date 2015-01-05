@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from django.db.models import get_app, get_models
 from forms import *
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
@@ -11,13 +11,40 @@ from django.template import RequestContext
 from Openworm_Project.settings import AWS_STORAGE_BUCKET_NAME
 import time
 import re
-from models import Platerawvideo, Plate
+from models import Platerawvideo, Plate, Lab, Experimenter, Strain, Worm, Wormlist
 
 def index(request):
     from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
     nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
 
     return render(request, "Openworm/home.html", {"links":nice_urls})
+
+def InitialData(request):
+    model = Lab(name = "Test Name", description = "Test Description", address = "Test Address")
+    model.save()
+    lab_id = model.id
+
+    model = Experimenter(labkey = Lab.objects.get(pk = lab_id), name = "Test Name", description = "Test Description")
+    model.save()
+    experimenter_id = model.id
+
+    model = Strain(name = "Test Name", gene = "Test Gene", genotype = "Test Genotype", allele = "Test Allele", chromosome = "Test Chomosome", simulated = "Y")
+    model.save()
+    strain_id = model.id
+
+    model = Worm(strainkey = Strain.objects.get(pk = strain_id), name = "Test Name", sex = "Test Sex", generationssincethawing = 3, habituation = "Test Habituation")
+    model.save()
+    worm_id = model.id
+
+    model = Wormlist(wormkey = Worm.objects.get(pk = worm_id), name = "Test Name")
+    model.save()
+    wormlist_id = model.id
+
+    model = Plate(wormlistkey = Wormlist.objects.get(pk = wormlist_id), experimenterkey = Experimenter.objects.get(pk = experimenter_id), name = "Test Name", sampletype = "Test Type", copyright = "Test Copyright", vulvaorientation = "Test", annotation = "Test Annotation", chemicals = "Test Chemicals", food = "Test Food", illumination = "Test Illumination", temperature = 10, tracker = "Test Tracker", agarside = "Test Agar Side", gasconcentration = "Test Gas Concentration")
+    model.save()
+    plate_id = model.id
+
+    return HttpResponse(plate_id)
 
 def handle_uploaded_file(f, post):
     conn = S3Connection()
