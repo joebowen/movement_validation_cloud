@@ -14,7 +14,7 @@ argparse==1.2.1
 backports.ssl-match-hostname==3.4.0.2
 certifi==14.05.14
 django-bootstrap3==5.0.3
-django-s3direct==0.3.8
+django-s3direct==0.3.9
 docutils==0.12
 ##freemix==0.2
 ##cython
