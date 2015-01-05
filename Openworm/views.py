@@ -14,8 +14,7 @@ import re
 from models import Platerawvideo, Plate, Lab, Experimenter, Strain, Worm, Wormlist
 
 def index(request):
-    from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
-    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+    nice_urls = get_urls()
 
     return render(request, "Openworm/home.html", {"links":nice_urls})
 
@@ -91,8 +90,7 @@ def handle_uploaded_item(model, post):
     return new_model.id
 
 def dashboard(request, pk='', id=-1):
-    from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
-    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+    nice_urls = get_urls()
 
     obj_count = {}
 
