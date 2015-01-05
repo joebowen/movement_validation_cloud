@@ -60,8 +60,7 @@ def handle_uploaded_file(f, post):
     return model.id
 
 def VideoUpload(request):
-    from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
-    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+    nice_urls = get_urls()
 
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
@@ -137,7 +136,7 @@ def dashboard(request, pk='', id=-1):
         return render_to_response('Openworm/item.html', {'form': form, "links":nice_urls}, context_instance=RequestContext(request))
 
 
-def get_urls(raw_urls, urlbase=''):
+def get_urls():
     '''Recursively builds a list of all the urls in the current project and the name of their associated view'''
     from operator import itemgetter
     nice_urls = []
@@ -148,8 +147,7 @@ def get_urls(raw_urls, urlbase=''):
     return nice_urls
 
 def RESTapi(request):
-    from Openworm.urls import urlpatterns #this import should be inside the function to avoid an import loop
-    nice_urls = get_urls(urlpatterns) #build the list of urls recursively and then sort it alphabetically
+    nice_urls = get_urls()
 
     return render(request, "Openworm/api.html", {"links":nice_urls})
 
