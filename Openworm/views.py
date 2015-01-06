@@ -47,8 +47,8 @@ def InitialData(request):
 def handle_uploaded_item(request, model, post):
     new_model = model()
 
-    for key, value in post.iteritems():
-        if "videofile" in key:
+    for post_key, post_value in post.iteritems():
+        if "videofile" in post_key:
             conn = S3Connection()
             bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
             k = Key(bucket)
@@ -56,16 +56,16 @@ def handle_uploaded_item(request, model, post):
             k.set_contents_from_file(request.FILES['file'])
             url = k.generate_url(expires_in=0, query_auth=False)
             setattr(new_model, "videofileurl", url)
-        elif "key" not in key:
-            setattr(new_model, key, value)
+        elif "key" not in post_key:
+            setattr(new_model, post_key, post_value)
         else:
             app = get_app('Openworm')
             for model in get_models(app):
                 p = re.compile('(\w*)key')
-                model_name = p.match(key).group(1).title()
+                model_name = p.match(post_key).group(1).title()
                 if (model_name == model().get_subclass_name()):
                     print model_name
-                    setattr(new_model, key, model.objects.get(pk = value))
+                    setattr(new_model, post_key, model.objects.get(pk = post_value))
 
     new_model.save()
 
