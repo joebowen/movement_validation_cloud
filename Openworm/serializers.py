@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from models import *
+from s3direct.widgets import S3DirectWidget
+from django import forms
 from django.contrib.auth.models import User
 
 class AspectSerializer(serializers.ModelSerializer):
@@ -117,6 +119,7 @@ class PlatefeatureSerializer(serializers.ModelSerializer):
 class PlaterawvideoSerializer(serializers.ModelSerializer):
     #owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     platekey = serializers.PrimaryKeyRelatedField(queryset=Plate.objects.all())
+    videofile = forms.URLField(widget=S3DirectWidget(dest='destination_key_from_settings'))
     #videometadatakey = serializers.PrimaryKeyRelatedField(queryset=Videoattributes.objects.all())
 
     class Meta:
