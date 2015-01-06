@@ -116,7 +116,7 @@ class PlatefeatureSerializer(serializers.ModelSerializer):
 
 class PlaterawvideoSerializer(serializers.ModelSerializer):
     #owner = serializers.SlugRelatedField(queryset=User.objects.all(), many=True, slug_field='name')
-    platekey = serializers.SlugRelatedField(queryset=Plate.objects.all(), many=True, slug_field='name')
+    platekey = serializers.SlugRelatedField(queryset=Plate.objects.all(), many=False, slug_field='name')
     #videometadatakey = serializers.SlugRelatedField(queryset=Videoattributes.objects.all(), many=True, slug_field='name')
 
     class Meta:
