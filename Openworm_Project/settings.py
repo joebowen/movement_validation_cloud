@@ -40,7 +40,6 @@ INSTALLED_APPS = (
     'Openworm',
     'rest_framework',
     'bootstrap3',
-    's3direct',
     'django_extensions',
 )
 
