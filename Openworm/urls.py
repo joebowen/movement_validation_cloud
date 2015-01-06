@@ -16,4 +16,6 @@ urlpatterns = patterns('',
     url(r'^videoupload/', views.VideoUpload, name='Video Upload'),
 
     url(r'^init/', views.InitialData, name='Initial Data'),
+
+    url(r'^s3direct/', include('s3direct.urls')),
 )
