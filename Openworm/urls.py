@@ -12,7 +12,5 @@ urlpatterns = patterns('',
     url(r'^api/(?P<name>[\w]+)/$', views.RESTListViewAll.as_view(), name='REST API'),
     url(r'^api/(?P<name>[\w]+)/(?P<id>[0-9]+)/$', views.RESTListView.as_view(), name='REST API'),
 
-    url(r'^videoupload/', views.VideoUpload, name='Video Upload'),
-
     url(r'^init/', views.InitialData, name='Initial Data'),
 )
