@@ -2,7 +2,6 @@ from rest_framework import authentication, permissions
 from django.shortcuts import render
 from rest_framework import generics
 from django.db.models import get_app, get_models
-from forms import *
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from boto.s3.connection import S3Connection
@@ -11,7 +10,7 @@ from django.template import RequestContext
 from Openworm_Project.settings import AWS_STORAGE_BUCKET_NAME
 import time
 import re
-from models import Platerawvideo, Plate, Lab, Experimenter, Strain, Worm, Wormlist
+from models import Plate, Lab, Experimenter, Strain, Worm, Wormlist
 
 def index(request):
     nice_urls = get_urls()
@@ -45,43 +44,17 @@ def InitialData(request):
 
     return HttpResponse(plate_id)
 
-def handle_uploaded_file(f, post):
-    conn = S3Connection()
-    bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
-    k = Key(bucket)
-    k.key = str(time.time()) + "." + f.name
-    k.set_contents_from_file(f)
-
-    model = Platerawvideo(name = post['name'], description = post['description'], title = post['title'], shorttitle = post['shorttitle'], videofile = k.key, fps = post['fps'], numframes = post['numframes'], width = post['width'], height = post['height'], micronsperpixel = post['micronsperpixel'], platekey = Plate.objects.get(pk = post['platekey']))
-
-    model.save()
-
-    return model.id
-
-def VideoUpload(request):
-    nice_urls = get_urls()
-
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            id = handle_uploaded_file(request.FILES['file'],request.POST)
-            return HttpResponseRedirect('/dashboard/Platerawvideo/' + str(id))
-    else:
-        form = UploadFileForm()
-    return render_to_response('Openworm/videoupload.html', {'form': form, "links":nice_urls}, context_instance=RequestContext(request))
-
 def handle_uploaded_item(request, model, post):
     new_model = model()
 
     for key, value in post.iteritems():
         if "videofile" in key:
-            pass
-            #conn = S3Connection()
-            #bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
-            #k = Key(bucket)
-            #k.key = str(time.time()) + "." + request.FILES['file'].name
-            #k.set_contents_from_file(request.FILES['file'])
-            #setattr(new_model, key, k.key)
+            conn = S3Connection()
+            bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
+            k = Key(bucket)
+            k.key = str(time.time()) + "." + request.FILES['file'].name
+            k.set_contents_from_file(request.FILES['file'])
+            setattr(new_model, key, k.key)
         elif "key" not in key:
             setattr(new_model, key, value)
         else:

@@ -6,19 +6,6 @@ class MyModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return "id: " + str(obj.id) + " name: "+ obj.name
 
-class UploadFileForm(forms.Form):
-    title = forms.CharField(max_length=50)
-    shorttitle = forms.CharField(max_length=20)
-    name = forms.CharField(max_length=100)
-    description = forms.CharField(max_length=500)
-    fps = forms.IntegerField()
-    numframes = forms.IntegerField()
-    width = forms.IntegerField()
-    height = forms.IntegerField()
-    micronsperpixel = forms.IntegerField()
-    platekey = MyModelChoiceField(queryset=Plate.objects.all())
-    videofile = forms.URLField(widget=S3DirectWidget(dest='destination_key_from_settings'))
-
 class AspectForm(forms.Form):
     name = forms.CharField(max_length=100)
     description = forms.CharField(max_length=500)
@@ -114,7 +101,7 @@ class PlaterawvideoForm(forms.Form):
     description = forms.CharField(max_length=500)
     title = forms.CharField(max_length=20)
     shorttitle = forms.CharField(max_length=20)
-    videofile = forms.URLField(widget=S3DirectWidget(dest='destination_key_from_settings'))
+    videofile = forms.CharField(max_length=200)
     fps = forms.IntegerField()
     numframes = forms.FloatField()
     width = forms.IntegerField()
