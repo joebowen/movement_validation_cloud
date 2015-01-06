@@ -197,7 +197,7 @@ class Platefeature(models.Model):
 
 class Platerawvideo(models.Model):
     #platerawvideokey = models.IntegerField(db_column='PlateRawVideoKey', primary_key=True)
-    platekey = models.ForeignKey(Plate, db_column='PlateKey', many=False)
+    platekey = models.ForeignKey(Plate, db_column='PlateKey') #, many=False)
     def get_subclass_name(self):
         return self.__class__.__name__
 
