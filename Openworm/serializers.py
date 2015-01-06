@@ -118,7 +118,8 @@ class PlatefeatureSerializer(serializers.ModelSerializer):
 
 class PlaterawvideoSerializer(serializers.ModelSerializer):
     #owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    platekey = serializers.PrimaryKeyRelatedField(queryset=Plate.objects.all())
+    #platekey = serializers.PrimaryKeyRelatedField(queryset=Plate.objects.all())
+    platekey = serializers.SlugRelatedField(queryset=Plate.objects.all(), slug_field='platekey')
     #videofile = forms.URLField(widget=S3DirectWidget(dest='destination_key_from_settings'))
     #videometadatakey = serializers.PrimaryKeyRelatedField(queryset=Videoattributes.objects.all())
 
