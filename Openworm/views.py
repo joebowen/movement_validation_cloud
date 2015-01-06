@@ -75,12 +75,13 @@ def handle_uploaded_item(request, model, post):
 
     for key, value in post.iteritems():
         if "videofile" in key:
-            conn = S3Connection()
-            bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
-            k = Key(bucket)
-            k.key = str(time.time()) + "." + request.FILES['file'].name
-            k.set_contents_from_file(request.FILES['file'])
-            setattr(new_model, key, k.key)
+            pass
+            #conn = S3Connection()
+            #bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
+            #k = Key(bucket)
+            #k.key = str(time.time()) + "." + request.FILES['file'].name
+            #k.set_contents_from_file(request.FILES['file'])
+            #setattr(new_model, key, k.key)
         elif "key" not in key:
             setattr(new_model, key, value)
         else:
