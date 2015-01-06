@@ -55,9 +55,18 @@ def handle_uploaded_item(request, model, post):
             k.key = str(time.time()) + "." + request.FILES['videofile'].name
             k.set_contents_from_file(request.FILES['videofile'])
             url = k.generate_url(expires_in=0, query_auth=False)
+
+            # This is needed due to a bug in boto, see link below for further details
+            # https://github.com/boto/boto/issues/2043
+            todelete="x-amz-security-token"
+            url = re.sub(r''+todelete+'=[a-zA-Z_0-9]*\&*',r'', url)
+            url = re.sub(r'&$',r'', url)
+
             setattr(new_model, "videofileurl", url)
+
         elif "key" not in post_key:
             setattr(new_model, post_key, post_value)
+
         else:
             app = get_app('Openworm')
             for model in get_models(app):
