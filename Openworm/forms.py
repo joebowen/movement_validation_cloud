@@ -96,7 +96,7 @@ class PlatefeatureForm(forms.Form):
     shorttitle = forms.CharField(max_length=20)
 
 class PlaterawvideoForm(forms.Form):
-    platekey = MyModelChoiceField(queryset=Plate.objects.all())    
+    platekey_id = MyModelChoiceField(queryset=Plate.objects.all())
     name = forms.CharField(max_length=100)
     description = forms.CharField(max_length=500)
     title = forms.CharField(max_length=20)
