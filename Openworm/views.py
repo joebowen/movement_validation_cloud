@@ -55,7 +55,7 @@ def handle_uploaded_item(request, model, post):
             k.key = str(time.time()) + "." + request.FILES['file'].name
             k.set_contents_from_file(request.FILES['file'])
             url = k.generate_url(expires_in=0, query_auth=False)
-            setattr(new_model, key, url)
+            setattr(new_model, "videofileurl", url)
         elif "key" not in key:
             setattr(new_model, key, value)
         else:
