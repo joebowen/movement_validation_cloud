@@ -80,6 +80,7 @@ def handle_uploaded_item(request, model, post):
             k = Key(bucket)
             k.key = str(time.time()) + "." + request.FILES['file'].name
             k.set_contents_from_file(request.FILES['file'])
+            setattr(new_model, key, k.key)
         if "key" not in key:
             setattr(new_model, key, value)
         else:
