@@ -124,7 +124,7 @@ class PlaterawvideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Platerawvideo
-        fields = ('id', 'timestamp', 'name', 'description', 'title', 'shorttitle', 'videofile', 'videofileurl','fps', 'numframes', 'width', 'height', 'micronsperpixel', 'platekey')
+        fields = ('id', 'timestamp', 'name', 'description', 'title', 'shorttitle', 'videofileurl','fps', 'numframes', 'width', 'height', 'micronsperpixel', 'platekey')
         
 class PlatewireframevideoSerializer(serializers.ModelSerializer):
     #owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
