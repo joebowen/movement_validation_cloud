@@ -124,9 +124,8 @@ def dashboard(request, pk='', id=-1):
             form = form_list(request.POST)
             if form.is_valid():
                 id = handle_uploaded_item(model_class,request.POST)
-                return HttpResponseRedirect('/dashboard/' + model_name + '/')
+                return HttpResponseRedirect('/dashboard/' + model_name + '/' + id)
         else:
-            print model_list
             if (len(model_list) > 0):
                 form = form_list(initial=model_list[0])
             else:

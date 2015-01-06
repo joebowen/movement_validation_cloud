@@ -114,7 +114,7 @@ class PlaterawvideoForm(forms.Form):
     description = forms.CharField(max_length=500)
     title = forms.CharField(max_length=20)
     shorttitle = forms.CharField(max_length=20)
-    videofile = S3DirectField(dest='destination_key_from_settings')
+    videofile = forms.URLField(widget=S3DirectWidget(dest='destination_key_from_settings'))
     fps = forms.IntegerField()
     numframes = forms.FloatField()
     width = forms.IntegerField()
