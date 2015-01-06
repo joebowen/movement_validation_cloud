@@ -54,7 +54,7 @@ def handle_uploaded_item(request, model, post):
             k = Key(bucket)
             k.key = str(time.time()) + "." + request.FILES['videofile'].name
             k.set_contents_from_file(request.FILES['videofile'])
-            url = k.generate_url(expires_in=0, query_auth=False)
+            url = k.generate_url(expires_in=0, query_auth=True)
             setattr(new_model, "videofileurl", url)
         elif "key" not in post_key:
             setattr(new_model, post_key, post_value)
