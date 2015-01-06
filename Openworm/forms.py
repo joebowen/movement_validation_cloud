@@ -1,5 +1,6 @@
 from django import forms
 from models import *
+from s3direct.widgets import S3DirectWidget
 
 class MyModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -16,7 +17,7 @@ class UploadFileForm(forms.Form):
     height = forms.IntegerField()
     micronsperpixel = forms.IntegerField()
     platekey = MyModelChoiceField(queryset=Plate.objects.all())
-    file  = forms.FileField()
+    videofile = forms.URLField(widget=S3DirectWidget(dest='destination_key_from_settings'))
 
 class AspectForm(forms.Form):
     name = forms.CharField(max_length=100)
