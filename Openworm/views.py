@@ -70,11 +70,17 @@ def VideoUpload(request):
         form = UploadFileForm()
     return render_to_response('Openworm/videoupload.html', {'form': form, "links":nice_urls}, context_instance=RequestContext(request))
 
-def handle_uploaded_item(model, post):
+def handle_uploaded_item(request, model, post):
     new_model = model()
 
     for key, value in post.iteritems():
-        if not "key" in key:
+        if "videofile" in key:
+            conn = S3Connection()
+            bucket = conn.get_bucket(AWS_STORAGE_BUCKET_NAME)
+            k = Key(bucket)
+            k.key = str(time.time()) + "." + request.FILES['file'].name
+            k.set_contents_from_file(request.FILES['file'])
+        if "key" not in key:
             setattr(new_model, key, value)
         else:
             app = get_app('Openworm')
@@ -123,8 +129,8 @@ def dashboard(request, pk='', id=-1):
         if request.method == 'POST':
             form = form_list(request.POST)
             if form.is_valid():
-                id = handle_uploaded_item(model_class,request.POST)
-                return HttpResponseRedirect('/dashboard/' + model_name + '/' + id)
+                id = handle_uploaded_item(request, model_class, request.POST)
+                return HttpResponseRedirect('/dashboard/' + model_name + '/' + str(id))
         else:
             if (len(model_list) > 0):
                 form = form_list(initial=model_list[0])
