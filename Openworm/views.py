@@ -59,7 +59,7 @@ def handle_uploaded_item(request, model, post):
             # This is needed due to a bug in boto, see link below for further details
             # https://github.com/boto/boto/issues/2043
             todelete="x-amz-security-token"
-            url = re.sub(r''+todelete+'=[a-zA-Z_0-9]*\&*',r'', url)
+            url = re.sub(r''+todelete+'=[a-zA-Z_0-9\/]*\&*',r'', url)
             url = re.sub(r'&$',r'', url)
 
             setattr(new_model, "videofileurl", url)
