@@ -206,7 +206,7 @@ class Platerawvideo(models.Model):
     description = models.CharField(db_column='Description', max_length=500, blank=True)
     title = models.CharField(db_column='Title', max_length=20, blank=True)
     shorttitle = models.CharField(db_column='ShortTitle', max_length=20, blank=True)
-    videofileurl = models.URLField(db_column='VideoFileURL', max_length=1000)
+    videofileurl = models.URLField(db_column='VideoFileURL', max_length=200)
     fps = models.IntegerField(db_column='FPS', blank=True, null=True)
     numframes = models.FloatField(db_column='NumFrames', blank=True, null=True)
     width = models.IntegerField(db_column='Width', blank=True, null=True)

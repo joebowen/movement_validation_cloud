@@ -102,7 +102,7 @@ class PlaterawvideoForm(forms.Form):
     title = forms.CharField(max_length=20)
     shorttitle = forms.CharField(max_length=20)
     videofile = forms.FileField(max_length=200, required=False)
-    videofileurl = forms.URLField(max_length=1000, required=False)
+    videofileurl = forms.URLField(max_length=200, required=False)
     fps = forms.IntegerField()
     numframes = forms.FloatField()
     width = forms.IntegerField()
