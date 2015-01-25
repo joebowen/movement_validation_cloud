@@ -1,7 +1,9 @@
 movement_validation_cloud
 =========================
 
-Movement validation cloud application
+Movement Validation cloud application
+
+The cloud application for the [movement_validation python package](https://github.com/openworm/movement_validation)
 
 source content/djangodev/bin/activate
 
