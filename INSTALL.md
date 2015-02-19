@@ -1,7 +1,7 @@
 **Installation Instructions [Windows]**
 
  
-1. Clone [this repository](https://github.com/joebowen/movement_validation_cloud)
+1. Clone [this repository](https://github.com/openworm/movement_validation_cloud)
 1. Follow [http://stackoverflow.com/questions/14207203/](http://stackoverflow.com/questions/14207203/)
 	1. Download AWSDevTools from [here](http://aws.amazon.com/developertools/AWS-Elastic-Beanstalk/6752709412171743)
 	2. Extract it to some folder on your computer, let’s call it `C:\Temp\`
